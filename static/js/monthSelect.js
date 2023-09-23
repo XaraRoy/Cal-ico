@@ -16,7 +16,8 @@ function updateTable(year, month) {
             displayMonth();
             // Call the highlightToday function to update the highlighting
             highlightToday();
-
+            // add prev/next month moves to empty cells
+            addEmptyCellListeners();
         }
     };
     xhr.open("GET", `/${year}/${month}`, true);
@@ -48,13 +49,17 @@ function getMonthName(month) {
 
 // Function to add event listeners to empty cells in the top and bottom rows
 function addEmptyCellListeners() {
+    console.log('adding empty listeners')
     var cells = document.querySelectorAll("td");
-    
+    console.log(cells)    
     // Add event listeners to empty cells in the top (3rd) row
     for (var i = 0; i < 7; i++) {
         var topEmptyCell = cells[i];
         if (topEmptyCell.classList.contains("noday")) {
+            console.log('adding to index', i)
             topEmptyCell.addEventListener("click", prevMonth);
+        } else {
+            console.log('skipping', i)
         }
     }
 
@@ -62,7 +67,10 @@ function addEmptyCellListeners() {
     for (var i = cells.length - 7; i < cells.length; i++) {
         var bottomEmptyCell = cells[i];
         if (bottomEmptyCell.classList.contains("noday")) {
+            console.log('adding to index', i)
             bottomEmptyCell.addEventListener("click", nextMonth);
+        } else {
+            console.log('skipping', i)
         }
     }
 }
@@ -80,8 +88,6 @@ function prevMonth() {
     displayMonth();
     // You can update your calendar content here for the previous month
     updateTable(selectedYear, selectedMonth);
-    highlightToday();
-
 }
 
 // Function to move to the next month
@@ -94,7 +100,6 @@ function nextMonth() {
     displayMonth();
     // You can update your calendar content here for the next month
     updateTable(selectedYear, selectedMonth);
-    highlightToday();
 
 }
 
@@ -102,4 +107,6 @@ function nextMonth() {
 document.addEventListener("DOMContentLoaded", function () {
     // Initial display of the selected month
     displayMonth();
+    // set the empty cells to change months
+    addEmptyCellListeners();
 });
