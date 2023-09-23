@@ -1,8 +1,13 @@
 table {
     width: 90vw;
     height: 90vh;
-    margin: 5%;
+    margin-top: 5vh;
+    margin-bottom: 5vh;
+    margin-left: 5vw;
+    margin-right: 5vw;
     table-layout: fixed;
+    position: absolute;
+    z-index: 0;
 }
 
 tbody{

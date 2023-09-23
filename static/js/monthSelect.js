@@ -18,6 +18,8 @@ function updateTable(year, month) {
             highlightToday();
             // add prev/next month moves to empty cells
             addEmptyCellListeners();
+            //addEventMenus
+            addEventMenus()
         }
     };
     xhr.open("GET", `/${year}/${month}`, true);
