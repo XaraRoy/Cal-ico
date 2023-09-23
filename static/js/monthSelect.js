@@ -44,6 +44,32 @@ function getMonthName(month) {
     return months[month - 1];
 }
 
+
+
+// Function to add event listeners to empty cells in the top and bottom rows
+function addEmptyCellListeners() {
+    var cells = document.querySelectorAll("td");
+    
+    // Add event listeners to empty cells in the top (3rd) row
+    for (var i = 0; i < 7; i++) {
+        var topEmptyCell = cells[i];
+        if (topEmptyCell.classList.contains("noday")) {
+            topEmptyCell.addEventListener("click", prevMonth);
+        }
+    }
+
+    // Add event listeners to empty cells in the bottom row
+    for (var i = cells.length - 7; i < cells.length; i++) {
+        var bottomEmptyCell = cells[i];
+        if (bottomEmptyCell.classList.contains("noday")) {
+            bottomEmptyCell.addEventListener("click", nextMonth);
+        }
+    }
+}
+
+
+
+
 // Function to move to the previous month
 function prevMonth() {
     selectedMonth--;

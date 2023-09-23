@@ -20,8 +20,17 @@ def root():
     head = '<head>' + '\n' + styles + '\n' + '</head>' + "\n"
     cal = html_cal \
         .formatmonth(year, month) \
-        .replace('border="0"', 'border="1"')
+        .replace('border="0"', 'id="calendarTable" border="1"')
     body = '<body>' + '\n' + cal + '\n' + '</body>' + "\n"
     javascript = jsLink('monthSelect') + jsLink('today')
     html = head + body + javascript
     return html
+
+
+@app.route('/<year>/<month>',  methods=['GET'])
+def updateTable(year, month):
+    html_cal = calendar.HTMLCalendar(firstweekday=0)
+    cal = html_cal \
+        .formatmonth(int(year), int(month)) \
+        .replace('border="0"', 'id="calendarTable" border="1"')
+    return cal
