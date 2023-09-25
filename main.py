@@ -1,5 +1,6 @@
-from flask import Flask
+from flask import Flask, current_app
 import calendar
+
 
 app = Flask(__name__)
 
@@ -8,7 +9,6 @@ def cssLink(name):
 
 def jsLink(name):
        return f'<script src="static/js/{name}.js"></script> \n'
- 
 
 
 @app.route("/")
@@ -19,6 +19,8 @@ def root():
 
     styles = cssLink('table') + cssLink('main') + cssLink('eventMenu')
     head = '<head>' + '\n' + styles + '\n' + '</head>' + "\n"
+
+    # permissionButton = '<button id="permission-btn" onclick="main()">Ask Permission</button>'
 
     eventMenu = '''
     <div id="eventContainer">
@@ -45,8 +47,8 @@ def root():
     cal = html_cal \
         .formatmonth(year, month) \
         .replace('border="0"', 'id="calendarTable" border="1"')
-    body = '<body>' + '\n' + cal + '\n' + eventMenu + '\n' + '</body>' + "\n"
-    javascript = jsLink('monthSelect') + jsLink('today') + jsLink('eventMenu')
+    body = '<body>' +'\n' + cal + '\n' + eventMenu + '\n' + '</body>' + "\n" #+ permissionButton +'\n'
+    javascript = jsLink('monthSelect') + jsLink('today') + jsLink('eventMenu') + jsLink('notify')
     html = head + body + javascript
     return html
 
@@ -58,3 +60,7 @@ def updateTable(year, month):
         .formatmonth(int(year), int(month)) \
         .replace('border="0"', 'id="calendarTable" border="1"')
     return cal
+
+@app.route('/service.js', methods=['GET'])
+def sw():
+    return current_app.send_static_file('service.js')
