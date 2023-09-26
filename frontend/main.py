@@ -3,6 +3,7 @@ import calendar
 import os
 from deta import Deta
 import requests
+import traceback
 
 deta = Deta()
 
@@ -122,7 +123,7 @@ def store_subscription_info():
         db.put(data, 'subscription')
         return jsonify({'message': 'Subscription data stored successfully'}), 200
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': str(traceback.format_exc())}), 500
 
 
 @app.route('/cal/<year>/<month>',  methods=['GET'])
