@@ -16,14 +16,12 @@ const registerServiceWorker = async () => {
 
 
 const requestNotificationPermission = async () => {
-    const permission = await window.Notification.requestPermission();
-    // value of permission can be 'granted', 'default', 'denied'
-    // granted: user has accepted the request
-    // default: user has dismissed the notification permission popup by clicking on x
-    // denied: user has denied the request.
-    if(permission !== 'granted'){
-        throw new Error('Permission not granted for Notification');
-    }
+    window.Notification.requestPermission().then((permission) => {
+        if (permission == "granted") {
+            registerServiceWorker();
+        }
+    });
+
 }
 
 const showLocalNotification = (title, body, swRegistration) => {
@@ -35,20 +33,14 @@ const showLocalNotification = (title, body, swRegistration) => {
 }
 
 const main = async () => {
-    console.log('checking')
-
-    check();
-    console.log('registering service worker')
-
-    const swRegistration = await registerServiceWorker();
-    console.log('getting permision')
-    const permission =  await requestNotificationPermission();
-    if (Notification.permission == 'granted'){
-        console.log('permission granted')
-
-    } else {
-        console.warn('permission not granted')
+    console.log('checking permission capability')
+    notificationCapability = await check();
+    if (Notification.permission == 'default' && notificationCapability == 'ok'){
+        await requestNotificationPermission();
+        if (Notification.permission == 'granted'){
+            console.log('permission granted');
+        } else {
+            console.warn('permission not granted or available')
+        }
     }
-    
 }
-main();

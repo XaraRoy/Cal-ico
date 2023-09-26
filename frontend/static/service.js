@@ -1,6 +1,7 @@
 // service.js
 
 
+
 self.addEventListener('notificationclick', function(event) {
     event.notification.close();
     // Handle the notification click event here, e.g., open a specific URL.
@@ -32,17 +33,12 @@ self.addEventListener('push', function(event) {
 
 
 
-
-
 self.addEventListener('install', function(event) {
-
   console.log('Service Worker installing.');
 });
 
 self.addEventListener('activate', function(event) {
   console.log('Service Worker activating.');
-
-  
   async function subscribeUser(publicKey) {
     console.log('attempting subscription')
     try {
@@ -105,6 +101,5 @@ self.addEventListener('activate', function(event) {
   .catch(error => {
       console.error('setup key error:', error);
   });
-
 });
 
