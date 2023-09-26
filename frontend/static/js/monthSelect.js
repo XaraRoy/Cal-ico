@@ -22,7 +22,7 @@ function updateTable(year, month) {
             addEventMenus()
         }
     };
-    xhr.open("GET", `/${year}/${month}`, true);
+    xhr.open("GET", `/cal/${year}/${month}`, true);
     xhr.send();
 }
 
