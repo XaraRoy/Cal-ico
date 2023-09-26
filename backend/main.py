@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import requests
 import os
 import json
+import traceback
 
 from pywebpush import WebPushException, webpush
 
@@ -22,43 +23,40 @@ def get_notifications():
     return jsonify(events)
 
 
-@app.route('/backend_test')
-def backend_test():
-    return jsonify('hello')
 
-
-@app.route('/send_push', methods=['POST'])
-def send_push():
+@app.route('/send_push', methods=['PUT', 'GET'])
+def send_push(jsonData):
     try:
         setupDB = deta.Base('setup')
-        vapid_private_key = setupDB.get('private-key')['value']
-        vapid_public_key = setupDB.get('public-key')['value']
+        items = setupDB.fetch().items
 
-        subscription_info = request.get_json()
-        push_data = {
-            "title": "New Notification",
-            "body": "This is a push notification from your Flask app!"
+
+        vapid_private_key = items[0]['value']
+
+        subscription = items[2]
+        push_subscription = {
+            "endpoint" : subscription['endpoint'],
+            "keys": {
+                "auth": subscription['keys']['auth'],
+                "p256dh": subscription['keys']['p256dh']
+            }
         }
 
-        # Calculate the expiration time for 1 hour from now
-        expiration_time = datetime.now() + timedelta(hours=1)
+        push_data = jsonData
 
 
         webpush(
-            subscription_info,
-            data=json.dumps(push_data),
+            push_subscription,
+            data=push_data,
             vapid_private_key=vapid_private_key,
-            vapid_public_key=vapid_public_key,
             vapid_claims={
-                "sub": "mailto:lux-ssj3@gmail.com",
-                "exp": int(expiration_time.timestamp()),
-                "aud":  "https://purrfect_planner-1-z2375828.deta.app/"
+                "sub": "mailto:roy.xara@gmail.com",
             }
         )
 
         return jsonify({'success': True})
     except WebPushException as e:
-        return jsonify({'success': False, 'error': str(e)})
+        return jsonify({'success': False, 'error': str(traceback.format_exc())})
 
 
 @app.route("/__space/v0/actions", methods=["POST"])
@@ -69,16 +67,16 @@ def handle_space_action():
         trigger = action_data.get("event", {}).get("trigger")
 
         if event_id == "check_calendar_event":
-            # get_notifications()
+            get_notifications()
             return jsonify(success=True, message="event update completed")
         elif event_id == "push_test":
-            # send_push()
+            send_push(json.dumps({'title':'Test Notification', 'body':'Scheduled Test Message'}))
             return jsonify(success=True, message="message pushed")
         else:
             return jsonify(success=False, message="Unknown action ID")
 
     except Exception as e:
-        return jsonify(success=False, message=str(e))
+        return jsonify(success=False, message=str(traceback.format_exc()))
 
 
 if __name__ == '__main__':
