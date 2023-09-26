@@ -1,5 +1,10 @@
-from flask import Flask, current_app
+from flask import Flask, current_app, jsonify, request
 import calendar
+import os
+from deta import Deta
+import requests
+
+deta = Deta()
 
 
 app = Flask(__name__)
@@ -11,8 +16,23 @@ def jsLink(name):
        return f'<script src="static/js/{name}.js"></script> \n'
 
 
+
+
 @app.route("/")
 def root():
+
+
+    url = '/node/'
+
+    try:
+        response = requests.get(url)
+        print(response.status_code)
+
+    except requests.exceptions.RequestException as e:
+        print(f"Request error: {e}")
+
+
+
     html_cal = calendar.HTMLCalendar(firstweekday=0)
     year = 2023
     month = 9
@@ -50,6 +70,7 @@ def root():
             <div id='buttonContainer' class="eventContainterInputs">
                 <button id="saveEvent">Save</button>
                 <button id="cancelEvent">Cancel</button>
+            </div>
         </div>
     </div>
     '''
@@ -71,12 +92,40 @@ def root():
         .formatmonth(year, month) \
         .replace('border="0"', 'id="calendarTable" border="1"')
     body = '<body>'  + '\n' + cal + '\n' + eventMenu + '\n' + '</body>' + "\n" #+ permissionButton +'\n' +'\n' + push_demo
-    javascript = jsLink('monthSelect') + jsLink('today') + jsLink('eventMenu') + jsLink('notify') #+jsLink('server')
+    javascript = jsLink('monthSelect') + jsLink('today') + jsLink('eventMenu') + jsLink('notify')
     html = head + body + javascript
     return html
 
 
-@app.route('/<year>/<month>',  methods=['GET'])
+@app.route('/setup/public_key')
+def setup_vapid_key():
+    db = deta.Base('setup')
+    response = db.get('public-key')
+    key = response['value']
+    return jsonify(key)
+
+@app.route('/setup/api_key')
+def setup_api_key():
+    api_key = os.environ.get('DETA_API_KEY')
+    return jsonify(api_key)
+
+@app.route('/setup/origin')
+def setup_origin():
+    origin = f"https://{os.getenv('DETA_SPACE_APP_HOSTNAME')}"
+    return jsonify(origin)
+
+@app.route('/setup/subscription', methods=['PUT'])
+def store_subscription_info():
+    try:
+        data = request.json
+        db = deta.Base('setup')
+        db.put(data, 'subscription')
+        return jsonify({'message': 'Subscription data stored successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/cal/<year>/<month>',  methods=['GET'])
 def updateTable(year, month):
     html_cal = calendar.HTMLCalendar(firstweekday=0)
     cal = html_cal \

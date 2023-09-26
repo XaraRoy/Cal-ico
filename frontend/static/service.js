@@ -1,20 +1,4 @@
 // service.js
-self.addEventListener('install', function(event) {
-  console.log('Service Worker installing.');
-});
-
-self.addEventListener('activate', function(event) {
-  console.log('Service Worker activating.');
-});
-
-
-const showLocalNotification = (title, body, swRegistration) => {
-  const options = {
-      body,
-      // here you can add more properties like icon, image, vibrate, etc.
-  };
-  swRegistration.showNotification(title, options);
-}
 
 
 self.addEventListener('notificationclick', function(event) {
@@ -44,7 +28,83 @@ self.addEventListener('push', function(event) {
   event.waitUntil(
     self.registration.showNotification(title, options)
   );
-  showLocalNotification(body, title, self.registration)
 });
 
+
+
+
+
+self.addEventListener('install', function(event) {
+
+  console.log('Service Worker installing.');
+});
+
+self.addEventListener('activate', function(event) {
+  console.log('Service Worker activating.');
+
   
+  async function subscribeUser(publicKey) {
+    console.log('attempting subscription')
+    try {
+        const subscription = await self.registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: publicKey
+        });
+        
+        // Send the subscription data to your server
+        const response = await fetch('/setup/subscription', {
+          method: 'PUT',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(subscription),
+        });
+
+        if (response.ok) {
+          console.log('Subscription successful');
+        } else {
+          console.error('Failed to store subscription on the server');
+        }
+
+        
+        await fetch(origin + '/send_push', {
+            method: 'POST',
+            body: JSON.stringify(subscription),
+        });
+
+        console.log('Subscription successful');
+        console.log(JSON.stringify(subscription))
+
+    } catch (error) {
+        console.error('Subscription failed:', error);
+    }
+  }
+  fetch('/node/')
+  .then(response => {
+      if (!response.ok) {
+          throw new Error('Error populating the vapid keys');
+      }
+  })
+  .then(() => {
+      fetch('/setup/public_key')
+      .then(response => {
+          if (!response.ok) {
+              throw new Error('Error Fetching the keys');
+          }
+          return response.json();
+      })
+      .then(publicKeyData => {
+          console.log('public key grabbed');
+          const publicKey = publicKeyData;
+          subscribeUser(publicKey)
+      })
+      .catch(error => {
+          console.error('Fetch error:', error);
+      });
+  })
+  .catch(error => {
+      console.error('setup key error:', error);
+  });
+
+});
+
