@@ -61,7 +61,7 @@ self.addEventListener('activate', function(event) {
         });
 
         if (response.ok) {
-          console.log('Subscription successful');
+          console.log('Subscription stored successfuly');
         } else {
           console.error('Failed to store subscription on the server');
         }
@@ -73,7 +73,7 @@ self.addEventListener('activate', function(event) {
         });
 
         console.log('Subscription successful');
-        console.log(JSON.stringify(subscription))
+
 
     } catch (error) {
         console.error('Subscription failed:', error);
