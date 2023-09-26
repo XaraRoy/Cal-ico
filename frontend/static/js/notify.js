@@ -44,10 +44,10 @@ const main = async () => {
     console.log('getting permision')
     const permission =  await requestNotificationPermission();
     if (Notification.permission == 'granted'){
-        console.log('showing notification')
-        showLocalNotification('Test Notification', 'Test Notification Message', swRegistration);
+        console.log('permission granted')
+
     } else {
-        console.log('permission not granted')
+        console.warn('permission not granted')
     }
     
 }
