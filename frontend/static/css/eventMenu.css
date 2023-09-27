@@ -2,8 +2,8 @@
     display: none;
     right: 35%;
     top: 25%;
-    width: 55%;
-    height: 55%;
+    width: 250;
+    height: 600;
     background-color: rgba(0, 0, 0, 0.699);
     z-index: 25;
     position: absolute;
@@ -15,6 +15,8 @@
     display: flex;
     flex-direction: row;
     padding: 10;
+    width: 200;
+    justify-content: space-between;
 }
 
 .eventMenu{
@@ -25,4 +27,25 @@
     height: 97%;
     justify-content: center;
     align-items: center;
+}
+
+.eventTime{
+    display: flex;
+    flex-direction: row;
+    width: 60%;
+}
+
+.weekly-options{
+    width: 75%;
+}
+
+.eventDate{
+    text-align: center;
+}
+
+.DateContainer{
+    height: auto;
+}
+.nameContainer{
+    height: auto;
 }
