@@ -45,8 +45,9 @@ function addEventMenus() {
     dayElements.forEach(function (dayElement) {
         dayElement.addEventListener("click", function () {
             // Show the menu
-            eventContainer.style.display = "flex";
-            eventMenu.style.display = "flex"
+            eventContainer.style.display = eventContainer.style.display === "none" ? "flex" : "none";
+            eventMenu.style.display = eventMenu.style.display === "none" ? "flex" : "none";
+
 
             // Capture the date from the clicked day (you can use a data attribute or other method)
             var selectedMonthYear = document.querySelector(".month th").textContent.trim();
