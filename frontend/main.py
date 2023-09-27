@@ -37,7 +37,7 @@ def root():
     year = 2023
     month = 9
 
-    styles = cssLink('table') + cssLink('main') + cssLink('eventMenu')
+    styles = cssLink('table') + cssLink('main') + cssLink('eventMenu') + cssLink('pets')
     head = '<head>' + '\n' + styles + '\n' + '</head>' + "\n"
 
     # permissionButton = '<button id="permission-btn" onclick="main()">Ask Permission</button>'
@@ -49,13 +49,23 @@ def root():
     #     <button id="doIt">Try to conquer Italy!</button>
 
     # '''
-    petHouse =  '''<img src="/setup/images/house_tiny" alt="pets" id='pethouse'> \n'''
+    pets  = '''
 
+    <div class='petBar'>
+              <img src="/setup/images/tinyhouse" alt="petSelector" id="pethouse">
+      <div id="petSelector" style="display: none;">
+            <img src="/setup/images/petRock" alt="petRock" id='petRock' class="pet">
+            <img src="/setup/images/petRock" alt="petBird" id='petBird' class="pet">
+      </div>
+
+    </div>
+  
+    '''
 
     #TODO ADD CUSTOM RECURRENCE
     eventMenu = '''
-    <div id="eventContainer">
-        <div id="eventMenu" class="eventMenu" style="display: block;">
+    <div id="eventContainer" style="display: none;">
+        <div id="eventMenu" class="eventMenu" style="display: none;">
             <div id='DateContainer' class="eventContainterInputs">
                 <input type="text" id="eventDate" placeholder="Enter date"><br>
             </div>
@@ -181,8 +191,8 @@ def root():
         .formatmonth(year, month) \
         .replace('border="0"', 'id="calendarTable" border="1"')
     
-    body = '<body>'  + '\n' + cal + '\n' + eventMenu + "\n" + petHouse + '\n' + '</body>' #+ permissionButton +'\n' +'\n' + push_demo
-    javascript = jsLink('monthSelect') + jsLink('today') + jsLink('notify') + jsLink('eventMenu')
+    body = '<body>'  + '\n' + cal + '\n' + eventMenu + "\n" + pets + '\n' + '</body>' #+ permissionButton +'\n' +'\n' + push_demo
+    javascript = jsLink('monthSelect') + jsLink('today') + jsLink('notify') + jsLink('eventMenu') + jsLink('pets')
     html = head + body + javascript
     return html
 
