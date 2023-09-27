@@ -1,0 +1,54 @@
+#pethouse {
+    border: 1px solid black;
+    position: absolute;
+
+    width: 100px;
+    height: 100px;
+    top: 25px;
+}
+  
+#petSelector {
+    display: none;
+    background-color: #f2f2f2;
+    border: 1px solid #ccc;
+    padding: 10px;
+    position: absolute;
+    top: 25px; /* Adjust the top position as needed */
+    left: 125px;
+    flex-direction: row;
+    gap: 25px
+}
+
+.pet{
+    /*   position: absolute; */
+    cursor: pointer; 
+    border: 1px solid #ccc; 
+    height: 100px;
+    width: 100px;
+
+}
+  
+#petSelector .pet .activate{
+    border: 2px solid red;
+}
+  
+.activePet{
+    display: absolute;
+    zindex: 15; 
+}
+
+  
+.fallingPet{
+    display: absolute;
+    zindex: 15;
+    animation: fallAnimation 1s ease-in-out forwards; /* Adjust the duration and timing as needed */
+}
+
+@keyframes fallAnimation {
+    0% {
+        transform: translateY(0);
+    }
+    100% {
+        transform: translateY(var(--fall-distance, 0));
+    }
+}

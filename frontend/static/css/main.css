@@ -1,3 +1,9 @@
 body {
     background-color: wheat;
+    height:100vh;
+    overflow: hidden; 
+}
+
+input {
+    font-size: inherit;
 }
