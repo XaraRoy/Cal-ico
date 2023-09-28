@@ -172,6 +172,7 @@ function addEventMenus() {
                 } else {
                     console.error("Error submitting event data.");
                     eventContainer.style.setProperty('display', 'flex')
+                    eventMenu.style.setProperty('display', 'flex')
                     eventContainer.classList.add('failed')
                 }
             })
