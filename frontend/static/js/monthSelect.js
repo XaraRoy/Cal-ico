@@ -48,8 +48,6 @@ function getMonthName(month) {
     return months[month - 1];
 }
 
-
-
 // Function to add event listeners to empty cells in the top and bottom rows
 function addEmptyCellListeners() {
     try{
@@ -84,6 +82,7 @@ function prevMonth() {
     }
     displayMonth();
     updateTable(selectedYear, selectedMonth);
+    attachDayIds();
     populateEvents(selectedYear, selectedMonth);
 }
 
@@ -96,8 +95,17 @@ function nextMonth() {
     }
     displayMonth();
     updateTable(selectedYear, selectedMonth);
+    attachDayIds();
     populateEvents(selectedYear, selectedMonth);
 
+}
+
+// Add An ID to each TD
+function attachDayIds(){
+    var dayElements = document.querySelectorAll("td:not(.noday)");
+    dayElements.forEach(day => {
+        day.setAttribute('dayValue', day.textContent);
+    })
 }
 
 // Wait for the DOM to be fully loaded before executing the initial display
@@ -107,6 +115,8 @@ document.addEventListener("DOMContentLoaded", function () {
         displayMonth();
         // set the empty cells to change months
         addEmptyCellListeners();
+        // set the dayValue attribute
+        attachDayIds();
         // fetch the events for the current month
         populateEvents(selectedYear, selectedMonth)
     } catch (error) {
