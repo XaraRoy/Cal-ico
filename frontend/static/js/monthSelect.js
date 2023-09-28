@@ -1,4 +1,5 @@
 // Define a variable to keep track of the selected month and year
+// TODO extract
 var selectedMonth = 9; 
 var selectedYear = 2023;
 
@@ -51,26 +52,28 @@ function getMonthName(month) {
 
 // Function to add event listeners to empty cells in the top and bottom rows
 function addEmptyCellListeners() {
-    var cells = document.querySelectorAll("td");
-    // Add event listeners to empty cells in the top (3rd) row
-    for (var i = 0; i < 7; i++) {
-        var topEmptyCell = cells[i];
-        if (topEmptyCell.classList.contains("noday")) {
-            topEmptyCell.addEventListener("click", prevMonth);
+    try{
+        var cells = document.querySelectorAll("td");
+        // Add event listeners to empty cells in the top (3rd) row
+        for (var i = 0; i < 7; i++) {
+            var topEmptyCell = cells[i];
+            if (topEmptyCell.classList.contains("noday")) {
+                topEmptyCell.addEventListener("click", prevMonth);
+            }
         }
-    }
 
-    // Add event listeners to empty cells in the bottom row
-    for (var i = cells.length - 7; i < cells.length; i++) {
-        var bottomEmptyCell = cells[i];
-        if (bottomEmptyCell.classList.contains("noday")) {
-            bottomEmptyCell.addEventListener("click", nextMonth);
+        // Add event listeners to empty cells in the bottom row
+        for (var i = cells.length - 7; i < cells.length; i++) {
+            var bottomEmptyCell = cells[i];
+            if (bottomEmptyCell.classList.contains("noday")) {
+                bottomEmptyCell.addEventListener("click", nextMonth);
+            }
         }
+    } catch (error) {
+        console.error('error adding empty cell listeners:')
+        console.error(error)
     }
 }
-
-
-
 
 // Function to move to the previous month
 function prevMonth() {
@@ -80,8 +83,8 @@ function prevMonth() {
         selectedYear--;
     }
     displayMonth();
-    // You can update your calendar content here for the previous month
     updateTable(selectedYear, selectedMonth);
+    populateEvents(selectedYear, selectedMonth);
 }
 
 // Function to move to the next month
@@ -92,15 +95,23 @@ function nextMonth() {
         selectedYear++;
     }
     displayMonth();
-    // You can update your calendar content here for the next month
     updateTable(selectedYear, selectedMonth);
+    populateEvents(selectedYear, selectedMonth);
 
 }
 
 // Wait for the DOM to be fully loaded before executing the initial display
 document.addEventListener("DOMContentLoaded", function () {
-    // Initial display of the selected month
-    displayMonth();
-    // set the empty cells to change months
-    addEmptyCellListeners();
+    try {
+        // Initial display of the current month
+        displayMonth();
+        // set the empty cells to change months
+        addEmptyCellListeners();
+        // fetch the events for the current month
+        populateEvents(selectedYear, selectedMonth)
+    } catch (error) {
+        console.error('error loading initial calendar:')
+        console.error(error)
+    }
+
 });
