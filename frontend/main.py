@@ -41,16 +41,8 @@ def root():
     head = '<head>' + '\n' + styles + '\n' + '</head>' + "\n"
 
     # permissionButton = '<button id="permission-btn" onclick="main()">Ask Permission</button>'
-    # push_demo = '''
-    #     <form>
-    #     Notification delay: <input id='notification-delay' type='number' value='5'></input> seconds
-    #     Notification Time-To-Live: <input id='notification-ttl' type='number' value='0'></input> seconds
-    #     </form>
-    #     <button id="doIt">Try to conquer Italy!</button>
 
-    # '''
     pets  = '''
-
     <div class='petBar'>
               <img src="/setup/images/tinyhouse" alt="petSelector" id="pethouse">
       <div id="petSelector" style="display: none;">
@@ -195,6 +187,23 @@ def root():
     javascript = jsLink('monthSelect') + jsLink('today') + jsLink('notify') + jsLink('eventMenu') + jsLink('pets')
     html = head + body + javascript
     return html
+
+@app.route('/save_event', methods=['POST'])
+def submit_form():
+    try:
+        eventData = request.json
+
+        if eventData is None or not all(field in eventData for field in ['eventName', 'eventDate', 'eventDescription', 'timeString', 'selectedRecurrence', 'notificationFrequency']):
+            return jsonify({'success': False, 'error': 'Invalid eventData'})
+
+        events = deta.Base('events')
+        events.put(eventData)
+        
+        return jsonify({'success': True})
+    except:
+        return jsonify({'success': False, 'error': str(traceback.format_exc())})
+
+
 
 
 @app.route('/setup/public_key')

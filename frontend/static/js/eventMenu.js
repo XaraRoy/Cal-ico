@@ -128,18 +128,56 @@ function addEventMenus() {
         }
 
 
+        // Create a data object to send in the POST request
+        const data = {
+            'eventName': eventName,
+            'eventDate': eventDate,
+            'eventMonth': eventDate.split('/')[0],
+            'eventDay': eventDate.split('/')[1],
+            'eventYear': eventDate.split('/')[2],
+            'timeString': timeString,
+            'eventDescription': eventDescription,
+            'selectedRecurrence': selectedRecurrence,
+            'notificationFrequency': notificationFrequency
+        };
 
+            // Send a POST request to your Flask route
+        fetch('/save_event', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => {
+                // Handle the response as needed (e.g., show a success message)
+                if (response.ok) {
+                    console.log("Event data submitted successfully!");
+                    // Perform any additional actions here
+                     // Clear form elements
+                    eventNameInput.value = '';
+                    eventDateInput.value = '';
+                    eventDescriptionInput.value = '';
+                    document.getElementById("notification-frequency").value = 'never';
+                    document.getElementById("hour").value = '01';
+                    document.getElementById("minute").value = '00';
+                    document.getElementById("ampm").value = 'AM';
+                    document.getElementById("recurrence-type").value = 'none';
+                    // Uncheck all weekly checkboxes
+                    document.querySelectorAll("input[type='checkbox'][name^='day-']").forEach(checkbox => {
+                        checkbox.checked = false;
+                    eventContainer.classList.remove('failed')
 
-        // log the data
-        console.log("Inputed Name:", eventName);
-        console.log("Selected Date:", eventDate);
-        console.log("Selected Time:", timeString);
-        console.log('Inputed description:', eventDescription)
-        console.log('selected recurrence:', selectedRecurrence)
-        console.log('selected notification:', notificationFrequency)
-        // Perform any additional processing here, such as saving the data
-        // TODO
-
+                    });
+                } else {
+                    console.error("Error submitting event data.");
+                    eventContainer.style.setProperty('display', 'flex')
+                    eventContainer.classList.add('failed')
+                }
+            })
+            .catch(error => {
+                console.error("An error occurred:", error);
+            });
         // Hide the menu
         eventContainer.style.display = "none";
         eventMenu.style.display = "none";
