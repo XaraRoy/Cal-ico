@@ -1,0 +1,22 @@
+.event{
+    background-color: cadetblue;
+}
+
+.dayEventContainer{
+    display: flex;
+    flex-direction: column;
+    gap: 1vh;
+    overflow-y: hidden; 
+    overflow-x: hidden;
+    width: calc(90vw/7);
+    position: relative;
+    z-index: 15;
+    left: 0.25vw;
+    /* max-height: calc(80vh/7); */
+    height: 80%;
+    /* max-width: calc(90vh/7); */
+} 
+
+.dayEventContainer.overflow {
+    overflow-y: scroll; /* Show the vertical scrollbar if there's overflow */
+}

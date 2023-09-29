@@ -1,5 +1,5 @@
 table {
-    width: 95vw;
+    width: 90%;
     height: 90vh;
     margin-top: 5vh;
     margin-bottom: 5vh;
@@ -29,4 +29,8 @@ td{
     text-indent: 2%;
     font-weight: bold;
     width: calc(90%/7);
+    height: calc(90%/7);
+    max-width: calc(90vw/7);
+    max-height: calc(90%/7);
+
 }

@@ -2,6 +2,8 @@ body {
     background-color: wheat;
     height:100vh;
     overflow: hidden; 
+    margin: 0;
+    margin-left: 5%;
 }
 
 input {
