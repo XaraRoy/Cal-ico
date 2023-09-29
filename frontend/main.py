@@ -36,7 +36,7 @@ def root():
         year = 2023
         month = 9
 
-        styles = cssLink('table') + cssLink('main') + cssLink('eventMenu') + cssLink('pets')
+        styles = cssLink('table') + cssLink('main') + cssLink('eventMenu') + cssLink('pets') + cssLink('events')
         head = '<head>' + '\n' + styles + '\n' + '</head>' + "\n"
 
         pets  = '''
@@ -185,7 +185,7 @@ def root():
         html = head + body + javascript
         return html
     except:
-        return jsonify({'error': str(traceback.format_exc())})
+        return jsonify({'error': str(traceback.format_exc())}), 500
 
 
 @app.route('/save_event', methods=['POST'])
@@ -201,7 +201,7 @@ def submit_form():
         
         return jsonify({'success': True})
     except:
-        return jsonify({'success': False, 'error': str(traceback.format_exc())})
+        return jsonify({'success': False, 'error': str(traceback.format_exc())}), 500
 
 
 @app.route('/setup/public_key')
@@ -212,7 +212,7 @@ def setup_vapid_key():
         key = response['value']
         return jsonify(key)
     except:
-        return jsonify({'error': str(traceback.format_exc())})
+        return jsonify({'error': str(traceback.format_exc())}), 500
 
 
 @app.route('/setup/api_key')
@@ -221,16 +221,16 @@ def setup_api_key():
         api_key = os.environ.get('DETA_API_KEY')
         return jsonify(api_key)
     except:
-        return jsonify({'error': str(traceback.format_exc())})
+        return jsonify({'error': str(traceback.format_exc())}), 500
 
 
 @app.route('/setup/origin')
 def setup_origin():
     try:
         origin = f"https://{os.getenv('DETA_SPACE_APP_HOSTNAME')}"
-        return jsonify(origin)
+        return jsonify(origin), 200
     except:
-        return jsonify({'error': str(traceback.format_exc())})
+        return jsonify({'error': str(traceback.format_exc())}), 500
 
 
 @app.route('/setup/subscription', methods=['PUT'])
@@ -241,7 +241,7 @@ def store_subscription_info():
         db.put(data, 'subscription')
         return jsonify({'message': 'Subscription data stored successfully'})
     except Exception as e:
-        return jsonify({'error': str(traceback.format_exc())})
+        return jsonify({'error': str(traceback.format_exc())}), 500
 
 
 @app.route('/setup/images/<image_name>/')
@@ -252,19 +252,18 @@ def download_img(image_name):
         image = Response(res.iter_chunks(1024), content_type="image/png")
         return image
     except:
-        return jsonify({'error': str(traceback.format_exc())})
+        return jsonify({'error': str(traceback.format_exc())}), 500
 
-# @app.route('events/<year>/<month>',  methods=['GET'])
-# def getMonthlyEvents(year, month):
-#     try:
-#         monthstring = month
-#         if int(month)<10:
-#             monthstring = '0' + str(month)
-#         events = deta.Base('events')
-#         eventData = events.fetch({'eventMonth':monthstring, 'eventYear':str(year)}).items
-#         return jsonify(eventData)
-#     except:
-#         return jsonify({'error': str(traceback.format_exc())})
+@app.route('/events/<int:year>/<int:month>', methods=['GET'])
+def getMonthlyEvents(year, month):
+    try:
+        monthstring = str(month).zfill(2)  # Use zfill to pad month with leading zeros
+        events = deta.Base('events')
+        eventData = events.fetch({'eventMonth':monthstring, 'eventYear':str(year)}).items
+        return jsonify(eventData), 200
+    except Exception as e:
+        return jsonify({'error': str(e), 'traceback': traceback.format_exc(), 'success': False}), 500
+
 
 
 
@@ -277,7 +276,7 @@ def updateTable(year, month):
             .replace('border="0"', 'id="calendarTable" border="1"')
         return cal
     except:
-        return jsonify({'error': str(traceback.format_exc())})
+        return jsonify({'error': str(traceback.format_exc())}), 500
 
     
 

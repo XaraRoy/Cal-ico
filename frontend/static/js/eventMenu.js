@@ -54,14 +54,13 @@ function addEventMenus() {
             var words = selectedMonthYear.split(/\s+/);
             var selectedMonth = getMonthNumber(words[1]);
             var selectedYear = words[2];
-            var selectedDay = dayElement.textContent;
+            var selectedDay = dayElement.getAttribute('dayValue');
+
             if (parseInt(selectedDay) < 10) {
                 selectedDay  = 0 + selectedDay;
             };
             var date =  selectedMonth + '/' + selectedDay.toString() + "/" + selectedYear;
             eventDateInput.value = date;
-
-
 
         });
     });
@@ -126,15 +125,17 @@ function addEventMenus() {
         } else {
             selectedRecurrence = null; // Set to null if none selected
         }
-
+        const eventMonth = eventDate.split('/')[0];
+        const eventDay = eventDate.split('/')[1];
+        const eventYear = eventDate.split('/')[2];
 
         // Create a data object to send in the POST request
         const data = {
             'eventName': eventName,
             'eventDate': eventDate,
-            'eventMonth': eventDate.split('/')[0],
-            'eventDay': eventDate.split('/')[1],
-            'eventYear': eventDate.split('/')[2],
+            'eventMonth': eventMonth,
+            'eventDay': eventDay,
+            'eventYear': eventYear,
             'timeString': timeString,
             'eventDescription': eventDescription,
             'selectedRecurrence': selectedRecurrence,
@@ -182,6 +183,7 @@ function addEventMenus() {
         // Hide the menu
         eventContainer.style.display = "none";
         eventMenu.style.display = "none";
+        populateEvents(eventYear, eventMonth)
     });
 
 
