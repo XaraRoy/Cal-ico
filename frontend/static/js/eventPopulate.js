@@ -25,63 +25,65 @@ async function populateEvents(year, month,  day = null) {
                 xhr.send();
             });
         }
-
         // Await the promise returned by getEvents
-        const eventData = await getEvents();
-
-        eventData.forEach(function (event) {
-            // Extract event information
-            const eventTimestring = event.timeString
-            const eventDay = event.eventDay;
-            const eventName = event.eventName;
-            const eventMonth = event.eventMonth;
-
-            // Select all <td> elements
-            var dayElements = document.querySelectorAll("td:not(.noday)");
-
-            // Loop through the <td> elements
-            dayElements.forEach(function (td) {
-                // Check if the innerHTML (or textContent) matches the desired value
-                if (td.getAttribute('dayValue') === eventDay) {
-                    // Check if there's a "dayEventContainer" element within the <td>
-                    let eventContainer = td.querySelector('.dayEventContainer');
-
-                    // If it doesn't exist, create and append it
-                    if (!eventContainer) {
-                        eventContainer = document.createElement('div');
-                        eventContainer.className = 'dayEventContainer';
-                        td.appendChild(eventContainer);
-                     }
-
-                    const eventKey = `${eventTimestring}-${eventName}-${eventDay}-${eventMonth}`;
-
-                    // Create a unique event key
-                    const existingEvent = eventContainer.querySelector(`.event[data-event-key="${eventKey}"]`);
-
-                    if (!existingEvent) {
-                        const eventDiv = document.createElement('div');
-                        eventDiv.className = 'event';
-                        eventDiv.textContent = eventTimestring + ' ' + eventName;
-                        eventDiv.setAttribute('data-event-key', eventKey);
-                        eventContainer.appendChild(eventDiv);
-                        console.log('placeing' + eventKey)
-
-                    } else {
-                        console.log('skipping' + eventName)
-                    }
-
-                    if (eventContainer.scrollHeight > eventContainer.clientHeight) {
-                        // If there's overflow, add the 'overflow' class to enable scrolling
-                        eventContainer.classList.add('overflow');
-                      } else {
-                        // If there's no overflow, remove the 'overflow' class
-                        eventContainer.classList.remove('overflow');
-                      }
-
-
-                    // If you found the match, you can exit the loop
-                    return;
+        getEvents().then(eventData => {
+            eventData.forEach(function (event) {
+                // Extract event information
+                const eventTimestring = event.timeString
+                var eventDay = event.eventDay;
+                if (eventDay[0] == '0'){
+                    eventDay = eventDay[1];
                 }
+                const eventName = event.eventName;
+                const eventMonth = event.eventMonth;
+
+                // Select all <td> elements
+                var dayElements = document.querySelectorAll("td:not(.noday)");
+
+                // Loop through the <td> elements
+                dayElements.forEach(function (td) {
+                    // Check if the innerHTML (or textContent) matches the desired value
+                    if (td.getAttribute('dayValue') === eventDay) {
+                        // Check if there's a "dayEventContainer" element within the <td>
+                        let eventContainer = td.querySelector('.dayEventContainer');
+
+                        // If it doesn't exist, create and append it
+                        if (!eventContainer) {
+                            eventContainer = document.createElement('div');
+                            eventContainer.className = 'dayEventContainer';
+                            td.appendChild(eventContainer);
+                        }
+
+                        const eventKey = `${eventTimestring}-${eventName}-${eventDay}-${eventMonth}`;
+
+                        // Create a unique event key
+                        const existingEvent = eventContainer.querySelector(`.event[data-event-key="${eventKey}"]`);
+
+                        if (!existingEvent) {
+                            const eventDiv = document.createElement('div');
+                            eventDiv.className = 'event';
+                            eventDiv.textContent = eventTimestring + ' ' + eventName;
+                            eventDiv.setAttribute('data-event-key', eventKey);
+                            eventContainer.appendChild(eventDiv);
+                            console.log('placeing' + eventKey)
+
+                        } else {
+                            console.log('skipping' + eventName)
+                        }
+
+                        if (eventContainer.scrollHeight > eventContainer.clientHeight) {
+                            // If there's overflow, add the 'overflow' class to enable scrolling
+                            eventContainer.classList.add('overflow');
+                        } else {
+                            // If there's no overflow, remove the 'overflow' class
+                            eventContainer.classList.remove('overflow');
+                        }
+
+
+                        // If you found the match, you can exit the loop
+                        return;
+                    }
+                });
             });
         });
     } catch (error) {

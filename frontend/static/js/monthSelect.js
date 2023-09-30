@@ -4,8 +4,6 @@ var selectedMonth = 9;
 var selectedYear = 2023;
 
 
-
-
 function updateTable(year, month) {
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function () {
@@ -82,6 +80,7 @@ function prevMonth() {
     }
     displayMonth();
     updateTable(selectedYear, selectedMonth);
+    // addEventMenus()
     populateEvents(selectedYear, selectedMonth);
 }
 
@@ -94,6 +93,7 @@ function nextMonth() {
     }
     displayMonth();
     updateTable(selectedYear, selectedMonth);
+    // addEventMenus()
     populateEvents(selectedYear, selectedMonth);
 
 
@@ -106,6 +106,9 @@ document.addEventListener("DOMContentLoaded", function () {
     try {
         // Initial display of the current month
         displayMonth();
+
+        addEventMenus()
+
         // set the empty cells to change months
         addEmptyCellListeners();
         populateEvents(selectedYear, selectedMonth);

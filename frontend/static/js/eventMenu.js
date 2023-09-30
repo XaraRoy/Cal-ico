@@ -1,3 +1,6 @@
+let saveButtonListenerAdded = false;
+
+
 function getMonthNumber(monthName) {
     var months = [
         "January", "February", "March", "April",
@@ -80,7 +83,7 @@ function addEventMenus() {
     }
     });
     notificationFrequencyDropdown.addEventListener("change", function() {
-        main() // should prob rename this, but it is the notification permission
+        main() // TODO should prob rename this, but it is the notification permission
     });
 
 
@@ -93,99 +96,102 @@ function addEventMenus() {
 
 
     // Add a click event listener to the "Save" button
-    saveEventButton.addEventListener("click", function () {
-        // Get the captured data
-        var eventName = eventNameInput.value;
-        var eventDate = eventDateInput.value;
-        var eventDescription = eventDescriptionInput.value;
-        var notificationFrequency = notificationFrequencyDropdown.value;
+    if (!saveButtonListenerAdded) {
+        saveEventButton.addEventListener("click", function () {
+            // Get the captured data
+            var eventName = eventNameInput.value;
+            var eventDate = eventDateInput.value;
+            var eventDescription = eventDescriptionInput.value;
+            var notificationFrequency = notificationFrequencyDropdown.value;
 
-        // Get selected values from the dropdowns
-        const selectedHour = document.getElementById("hour").value;
-        const selectedMinute = document.getElementById("minute").value;
-        const selectedAMPM = document.getElementById("ampm").value;
-        // Create a time string in 12-hour format
-        const timeString = `${selectedHour}:${selectedMinute} ${selectedAMPM}`;
+            // Get selected values from the dropdowns
+            const selectedHour = document.getElementById("hour").value;
+            const selectedMinute = document.getElementById("minute").value;
+            const selectedAMPM = document.getElementById("ampm").value;
+            // Create a time string in 12-hour format
+            const timeString = `${selectedHour}:${selectedMinute} ${selectedAMPM}`;
 
 
-        const selectedValue = recurrenceTypeDropdown.value;
-        let selectedRecurrence = {}; // Object to store selected recurrence data
-      
-        // Depending on the selected recurrence type, capture the relevant data
-        if (selectedValue === "daily") {
-            selectedRecurrence.type= "Daily";
-        } else if (selectedValue === "weekly") {
-            selectedRecurrence.type = "Weekly";
-            selectedRecurrence.daysOfWeek = Array.from(weeklyCheckboxes)
-                .filter(checkbox => checkbox.checked)
-                .map(checkbox => checkbox.value);
-        } else if (selectedValue === "monthly") {
-            selectedRecurrence.type = "Monthly";
-            selectedRecurrence.dayOfMonth = monthlyDayOfMonthInput.value;
-        } else {
-            selectedRecurrence = null; // Set to null if none selected
-        }
-        const eventMonth = eventDate.split('/')[0];
-        const eventDay = eventDate.split('/')[1];
-        const eventYear = eventDate.split('/')[2];
+            const selectedValue = recurrenceTypeDropdown.value;
+            let selectedRecurrence = {}; // Object to store selected recurrence data
+        
+            // Depending on the selected recurrence type, capture the relevant data
+            if (selectedValue === "daily") {
+                selectedRecurrence.type= "Daily";
+            } else if (selectedValue === "weekly") {
+                selectedRecurrence.type = "Weekly";
+                selectedRecurrence.daysOfWeek = Array.from(weeklyCheckboxes)
+                    .filter(checkbox => checkbox.checked)
+                    .map(checkbox => checkbox.value);
+            } else if (selectedValue === "monthly") {
+                selectedRecurrence.type = "Monthly";
+                selectedRecurrence.dayOfMonth = monthlyDayOfMonthInput.value;
+            } else {
+                selectedRecurrence = null; // Set to null if none selected
+            }
+            const eventMonth = eventDate.split('/')[0];
+            const eventDay = eventDate.split('/')[1];
+            const eventYear = eventDate.split('/')[2];
 
-        // Create a data object to send in the POST request
-        const data = {
-            'eventName': eventName,
-            'eventDate': eventDate,
-            'eventMonth': eventMonth,
-            'eventDay': eventDay,
-            'eventYear': eventYear,
-            'timeString': timeString,
-            'eventDescription': eventDescription,
-            'selectedRecurrence': selectedRecurrence,
-            'notificationFrequency': notificationFrequency
-        };
+            // Create a data object to send in the POST request
+            const data = {
+                'eventName': eventName,
+                'eventDate': eventDate,
+                'eventMonth': eventMonth,
+                'eventDay': eventDay,
+                'eventYear': eventYear,
+                'timeString': timeString,
+                'eventDescription': eventDescription,
+                'selectedRecurrence': selectedRecurrence,
+                'notificationFrequency': notificationFrequency
+            };
 
-            // Send a POST request to your Flask route
-        fetch('/save_event', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-            .then(response => {
-                // Handle the response as needed (e.g., show a success message)
-                if (response.ok) {
-                    console.log("Event data submitted successfully!");
-                    // Perform any additional actions here
-                     // Clear form elements
-                    eventNameInput.value = '';
-                    eventDateInput.value = '';
-                    eventDescriptionInput.value = '';
-                    document.getElementById("notification-frequency").value = 'never';
-                    document.getElementById("hour").value = '01';
-                    document.getElementById("minute").value = '00';
-                    document.getElementById("ampm").value = 'AM';
-                    document.getElementById("recurrence-type").value = 'none';
-                    // Uncheck all weekly checkboxes
-                    document.querySelectorAll("input[type='checkbox'][name^='day-']").forEach(checkbox => {
-                        checkbox.checked = false;
-                    eventContainer.classList.remove('failed')
-
-                    });
-                } else {
-                    console.error("Error submitting event data.");
-                    eventContainer.style.setProperty('display', 'flex')
-                    eventMenu.style.setProperty('display', 'flex')
-                    eventContainer.classList.add('failed')
-                }
+                // Send a POST request to your Flask route
+            fetch('/save_event', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
             })
-            .catch(error => {
-                console.error("An error occurred:", error);
-            });
-        // Hide the menu
-        eventContainer.style.display = "none";
-        eventMenu.style.display = "none";
-        populateEvents(eventYear, eventMonth, eventDay)
-    });
+                .then(response => {
+                    // Handle the response as needed (e.g., show a success message)
+                    if (response.ok) {
+                        console.log("Event data submitted successfully!");
+                        // Perform any additional actions here
+                        // Clear form elements
+                        eventNameInput.value = '';
+                        eventDateInput.value = '';
+                        eventDescriptionInput.value = '';
+                        document.getElementById("notification-frequency").value = 'never';
+                        document.getElementById("hour").value = '01';
+                        document.getElementById("minute").value = '00';
+                        document.getElementById("ampm").value = 'AM';
+                        document.getElementById("recurrence-type").value = 'none';
+                        // Uncheck all weekly checkboxes
+                        document.querySelectorAll("input[type='checkbox'][name^='day-']").forEach(checkbox => {
+                            checkbox.checked = false;
+                        eventContainer.classList.remove('failed')
+                        populateEvents(eventYear, eventMonth, eventDay)
 
+
+                        });
+                    } else {
+                        console.error("Error submitting event data.");
+                        eventContainer.style.setProperty('display', 'flex')
+                        eventMenu.style.setProperty('display', 'flex')
+                        eventContainer.classList.add('failed')
+                    }
+                })
+                .catch(error => {
+                    console.error("An error occurred:", error);
+                });
+            // Hide the menu
+            eventContainer.style.display = "none";
+            eventMenu.style.display = "none";
+        });
+        saveButtonListenerAdded = true;
+    }
 
     // Add a click event listener to the "Cancel" button
     cancelEventButton.addEventListener("click", function () {
@@ -195,6 +201,3 @@ function addEventMenus() {
     });
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    addEventMenus()
-})
