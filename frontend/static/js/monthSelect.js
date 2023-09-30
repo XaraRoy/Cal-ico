@@ -99,17 +99,7 @@ function nextMonth() {
 
 }
 
-// Add An ID to each TD
-function attachDayIds(){
-    return new Promise((resolve) => {
 
-        var dayElements = document.querySelectorAll("td:not(.noday)");
-        dayElements.forEach(day => {
-            day.setAttribute('dayValue', day.textContent);
-        })
-    resolve();
-    })
-}
 
 // Wait for the DOM to be fully loaded before executing the initial display
 document.addEventListener("DOMContentLoaded", function () {
