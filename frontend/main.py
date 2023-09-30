@@ -51,10 +51,8 @@ def root():
 
         cat = '''
         <div>
-            <img id="sprite" src="/setup/images/resized_Spritesheet" alt="Sprite">
-            <canvas id="myCanvas">
-            </canvas>
-            <button id="start-animation">Start Animation</button>
+        	<canvas id="myCanvas">	</canvas>
+
         </div>
         '''
 
