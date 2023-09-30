@@ -82,7 +82,6 @@ function prevMonth() {
     }
     displayMonth();
     updateTable(selectedYear, selectedMonth);
-    attachDayIds();
     populateEvents(selectedYear, selectedMonth);
 }
 
@@ -95,16 +94,20 @@ function nextMonth() {
     }
     displayMonth();
     updateTable(selectedYear, selectedMonth);
-    attachDayIds();
     populateEvents(selectedYear, selectedMonth);
+
 
 }
 
 // Add An ID to each TD
 function attachDayIds(){
-    var dayElements = document.querySelectorAll("td:not(.noday)");
-    dayElements.forEach(day => {
-        day.setAttribute('dayValue', day.textContent);
+    return new Promise((resolve) => {
+
+        var dayElements = document.querySelectorAll("td:not(.noday)");
+        dayElements.forEach(day => {
+            day.setAttribute('dayValue', day.textContent);
+        })
+    resolve();
     })
 }
 
@@ -115,10 +118,8 @@ document.addEventListener("DOMContentLoaded", function () {
         displayMonth();
         // set the empty cells to change months
         addEmptyCellListeners();
-        // set the dayValue attribute
-        attachDayIds();
-        // fetch the events for the current month
-        populateEvents(selectedYear, selectedMonth)
+        populateEvents(selectedYear, selectedMonth);
+
     } catch (error) {
         console.error('error loading initial calendar:')
         console.error(error)

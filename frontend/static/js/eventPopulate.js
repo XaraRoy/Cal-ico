@@ -1,4 +1,4 @@
-async function populateEvents(year, month) {
+async function populateEvents(year, month,  day = null) {
     try {
         // Define a function that returns a promise
         function getEvents() {
@@ -17,7 +17,11 @@ async function populateEvents(year, month) {
                         }
                     }
                 };
-                xhr.open("GET", `/events/${year}/${month}`, true);
+                if (day !== null) {
+                    xhr.open("GET", `/events/${year}/${month}/${day}`, true);
+                } else {
+                    xhr.open("GET", `/events/${year}/${month}`, true);
+                }
                 xhr.send();
             });
         }
@@ -25,12 +29,12 @@ async function populateEvents(year, month) {
         // Await the promise returned by getEvents
         const eventData = await getEvents();
 
-        // Now eventData contains the response data as an array, and you can process it
         eventData.forEach(function (event) {
             // Extract event information
             const eventTimestring = event.timeString
             const eventDay = event.eventDay;
             const eventName = event.eventName;
+            const eventMonth = event.eventMonth;
 
             // Select all <td> elements
             var dayElements = document.querySelectorAll("td:not(.noday)");
@@ -48,11 +52,23 @@ async function populateEvents(year, month) {
                         eventContainer.className = 'dayEventContainer';
                         td.appendChild(eventContainer);
                      }
-                    
-                    const eventDiv = document.createElement('div');
-                    eventDiv.className = 'event';
-                    eventDiv.textContent = eventTimestring + ' ' + eventName;
-                    eventContainer.appendChild(eventDiv);
+
+                    const eventKey = `${eventTimestring}-${eventName}-${eventDay}-${eventMonth}`;
+
+                    // Create a unique event key
+                    const existingEvent = eventContainer.querySelector(`.event[data-event-key="${eventKey}"]`);
+
+                    if (!existingEvent) {
+                        const eventDiv = document.createElement('div');
+                        eventDiv.className = 'event';
+                        eventDiv.textContent = eventTimestring + ' ' + eventName;
+                        eventDiv.setAttribute('data-event-key', eventKey);
+                        eventContainer.appendChild(eventDiv);
+                        console.log('placeing' + eventKey)
+
+                    } else {
+                        console.log('skipping' + eventName)
+                    }
 
                     if (eventContainer.scrollHeight > eventContainer.clientHeight) {
                         // If there's overflow, add the 'overflow' class to enable scrolling

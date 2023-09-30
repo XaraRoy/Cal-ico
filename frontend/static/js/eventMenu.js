@@ -183,7 +183,7 @@ function addEventMenus() {
         // Hide the menu
         eventContainer.style.display = "none";
         eventMenu.style.display = "none";
-        populateEvents(eventYear, eventMonth)
+        populateEvents(eventYear, eventMonth, eventDay)
     });
 
 
