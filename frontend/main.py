@@ -2,6 +2,7 @@ from flask import Flask, current_app, jsonify, request, Response
 import calendar
 import os
 from deta import Deta
+from bs4 import BeautifulSoup
 import requests
 import traceback
 
@@ -13,6 +14,15 @@ def cssLink(name):
 
 def jsLink(name):
        return f'<script src="static/js/{name}.js"></script> \n'
+
+def addDayValues(cal):
+    soup = BeautifulSoup(cal)
+    last_day_cell = soup.findAll('td', class_=lambda value: value and 'noday' not in value)
+    lastDay = int(last_day_cell[-1].get_text())
+    for i in range (1, lastDay + 1):
+        cal = cal.replace(f'>{str(i)}</td>', f' dayvalue="{str(i)}">{str(i)}</td>' )
+    return cal
+
 
 
 @app.route("/")
@@ -36,19 +46,16 @@ def root():
         year = 2023
         month = 9
 
-        styles = cssLink('table') + cssLink('main') + cssLink('eventMenu') + cssLink('pets') + cssLink('events')
+        styles = cssLink('table') + cssLink('main') + cssLink('eventMenu') + cssLink('events') + cssLink('cat')
         head = '<head>' + '\n' + styles + '\n' + '</head>' + "\n"
 
-        pets  = '''
-        <div class='petBar'>
-                <img src="/setup/images/tinyhouse" alt="petSelector" id="pethouse">
-        <div id="petSelector" style="display: none;">
-                <img src="/setup/images/petRock" alt="petRock" id='petRock' class="pet">
-                <img src="/setup/images/petRock" alt="petBird" id='petBird' class="pet">
+        cat = '''
+        <div>
+            <img id="sprite" src="/setup/images/resized_Spritesheet" alt="Sprite">
+            <canvas id="myCanvas">
+            </canvas>
+            <button id="start-animation">Start Animation</button>
         </div>
-
-        </div>
-    
         '''
 
         #TODO ADD CUSTOM RECURRENCE
@@ -180,8 +187,8 @@ def root():
             .formatmonth(year, month) \
             .replace('border="0"', 'id="calendarTable" border="1"')
         
-        body = '<body>'  + '\n' + cal + '\n' + eventMenu + "\n" + pets + '\n' + '</body>'
-        javascript = jsLink('eventPopulate') + jsLink('monthSelect') + jsLink('today') + jsLink('notify') + jsLink('eventMenu') + jsLink('pets') 
+        body = '<body>'  + '\n' + addDayValues(cal) + '\n' + eventMenu + "\n" + cat + "\n" +'</body>'
+        javascript = jsLink('eventPopulate') + jsLink('monthSelect') + jsLink('today') + jsLink('notify') + jsLink('eventMenu') + jsLink('cat')
         html = head + body + javascript
         return html
     except:
@@ -254,16 +261,21 @@ def download_img(image_name):
     except:
         return jsonify({'error': str(traceback.format_exc())}), 500
 
-@app.route('/events/<int:year>/<int:month>', methods=['GET'])
-def getMonthlyEvents(year, month):
+@app.route('/events/<int:year>/<int:month>/<int:day>', methods=['GET'])
+@app.route('/events/<int:year>/<int:month>', defaults={'day': None}, methods=['GET'])
+def getMonthlyEvents(year, month, day):
     try:
-        monthstring = str(month).zfill(2)  # Use zfill to pad month with leading zeros
+        monthstring = str(month).zfill(2)
         events = deta.Base('events')
-        eventData = events.fetch({'eventMonth':monthstring, 'eventYear':str(year)}).items
+        if day != None:
+            daystring = str(day).zfill(2)
+            eventData = events.fetch({'eventDay':daystring, 'eventMonth':monthstring, 'eventYear':str(year)}).items
+        else:
+
+         eventData = events.fetch({'eventMonth':monthstring, 'eventYear':str(year)}).items
         return jsonify(eventData), 200
     except Exception as e:
         return jsonify({'error': str(e), 'traceback': traceback.format_exc(), 'success': False}), 500
-
 
 
 
@@ -274,7 +286,7 @@ def updateTable(year, month):
         cal = html_cal \
             .formatmonth(int(year), int(month)) \
             .replace('border="0"', 'id="calendarTable" border="1"')
-        return cal
+        return addDayValues(cal)
     except:
         return jsonify({'error': str(traceback.format_exc())}), 500
 
