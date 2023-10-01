@@ -44,6 +44,9 @@ function addEventMenus() {
     const weeklyOptionsDiv = document.getElementById("weekly-options");
     const monthlyOptionsDiv = document.getElementById("monthly-options");
     const notificationFrequencyDropdown = document.getElementById("notification-frequency");
+    const recurrenceEndDate = document.getElementById('end-date');
+    const recurrenceEndDateContainer = document.getElementById('recurrenceEndDateContainer');
+    var date = null;
     // Add a click event listener to each day element of the calendar
     dayElements.forEach(function (dayElement) {
         dayElement.addEventListener("click", function () {
@@ -58,29 +61,38 @@ function addEventMenus() {
             var selectedMonth = getMonthNumber(words[1]);
             var selectedYear = words[2];
             var selectedDay = dayElement.getAttribute('dayValue');
-
             if (parseInt(selectedDay) < 10) {
                 selectedDay  = 0 + selectedDay;
             };
-            var date =  selectedMonth + '/' + selectedDay.toString() + "/" + selectedYear;
+            date =  selectedYear + '-' + selectedMonth + '-' + selectedDay.toString()
             eventDateInput.value = date;
+            recurrenceEndDate.value = date;
+
 
         });
     });
     // Add an event listener to the recurrence type dropdown
     recurrenceTypeDropdown.addEventListener("change", function() {
-    const selectedValue = this.value; 
+        recurrenceEndDate.min = date;
+        const selectedValue = this.value;
 
-    // Hide all custom divs initially
-    weeklyOptionsDiv.style.display = "none";
-    monthlyOptionsDiv.style.display = "none";
+        // Hide all custom divs initially
+        weeklyOptionsDiv.style.display = "none";
+        monthlyOptionsDiv.style.display = "none";
+        recurrenceEndDateContainer.style.display = 'none';
 
-    // Show the custom div corresponding to the selected recurrence type
-    if (selectedValue === "weekly") {
-        weeklyOptionsDiv.style.display = "block";
-    } else if (selectedValue === "monthly") {
-        monthlyOptionsDiv.style.display = "block";
-    }
+        // Show the custom div corresponding to the selected recurrence type
+        if (selectedValue === "weekly") {
+            weeklyOptionsDiv.style.display = "block";
+            recurrenceEndDateContainer.style.display =  'block';
+
+        } else if (selectedValue === "monthly") {
+            monthlyOptionsDiv.style.display = "block";
+            recurrenceEndDateContainer.style.display =  'block';
+
+        } else if (selectedValue === 'daily') {
+            recurrenceEndDateContainer.style.display =  'block';
+        }
     });
     notificationFrequencyDropdown.addEventListener("change", function() {
         main() // TODO should prob rename this, but it is the notification permission
@@ -114,24 +126,28 @@ function addEventMenus() {
 
             const selectedValue = recurrenceTypeDropdown.value;
             let selectedRecurrence = {}; // Object to store selected recurrence data
-        
+            let selectedRecurrenceEndDate = document.getElementById('end-date').value;
             // Depending on the selected recurrence type, capture the relevant data
             if (selectedValue === "daily") {
                 selectedRecurrence.type= "Daily";
+                selectedRecurrence.endDate = selectedRecurrenceEndDate;
             } else if (selectedValue === "weekly") {
                 selectedRecurrence.type = "Weekly";
+                selectedRecurrence.endDate = selectedRecurrenceEndDate;
                 selectedRecurrence.daysOfWeek = Array.from(weeklyCheckboxes)
                     .filter(checkbox => checkbox.checked)
                     .map(checkbox => checkbox.value);
             } else if (selectedValue === "monthly") {
                 selectedRecurrence.type = "Monthly";
                 selectedRecurrence.dayOfMonth = monthlyDayOfMonthInput.value;
+                selectedRecurrence.endDate = selectedRecurrenceEndDate;
+
             } else {
                 selectedRecurrence = null; // Set to null if none selected
-            }
-            const eventMonth = eventDate.split('/')[0];
-            const eventDay = eventDate.split('/')[1];
-            const eventYear = eventDate.split('/')[2];
+            };
+            const eventMonth = eventDate.split('-')[1];
+            const eventDay = eventDate.split('-')[2];
+            const eventYear = eventDate.split('-')[0];
 
             // Create a data object to send in the POST request
             const data = {
@@ -146,6 +162,7 @@ function addEventMenus() {
                 'notificationFrequency': notificationFrequency
             };
 
+            console.log(data);
                 // Send a POST request to your Flask route
             fetch('/save_event', {
                 method: 'POST',
@@ -171,9 +188,12 @@ function addEventMenus() {
                         // Uncheck all weekly checkboxes
                         document.querySelectorAll("input[type='checkbox'][name^='day-']").forEach(checkbox => {
                             checkbox.checked = false;
-                        eventContainer.classList.remove('failed')
-                        populateEvents(eventYear, eventMonth, eventDay)
-
+                        eventContainer.classList.remove('failed');
+                        if (selectedValue == 'None'){
+                            populateEvents(eventYear, eventMonth, eventDay);
+                        } else {
+                            populateEvents(eventYear, eventMonth);
+                        }
 
                         });
                     } else {
@@ -198,6 +218,12 @@ function addEventMenus() {
         // Hide the menu without saving any data
         eventContainer.style.display = "none";
         eventMenu.style.display = "none";
+        recurrenceEndDateContainer.style.display = "none"
+        for (input in   eventDateInput , eventNameInput , eventDescriptionInput,
+             recurrenceTypeDropdown, weeklyOptionsDiv, monthlyOptionsDiv ,
+              notificationFrequencyDropdown,  recurrenceEndDate){
+                input.value = null;
+              }
     });
 }
 
