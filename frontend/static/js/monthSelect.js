@@ -1,7 +1,7 @@
 // Define a variable to keep track of the selected month and year
-// TODO extract
-var selectedMonth = 9; 
-var selectedYear = 2023;
+const currentDate = new Date();
+var selectedMonth = currentDate.getMonth() + 1; 
+var selectedYear = currentDate.getFullYear();
 
 
 function updateTable(year, month) {
