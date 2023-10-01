@@ -33,17 +33,17 @@ background-color: rgba(255, 0, 0, 0.699);
     align-items: center;
 }
 
-.eventTime{
+#eventTime{
     display: flex;
-    flex-direction: row;
+    flex-direction: row !important;
     width: 60%;
 }
 
-.weekly-options{
+#weekly-options{
     width: 75%;
 }
 
-.eventDate{
+#eventDate{
     text-align: center;
 }
 
@@ -52,4 +52,15 @@ background-color: rgba(255, 0, 0, 0.699);
 }
 .nameContainer{
     height: auto;
+}
+
+
+/* Styles for mobile (screen width less than 768px) */
+@media screen and (max-width: 768px) {
+    #eventContainer {
+        width: 100%; /* Take up full width on mobile */
+        height: 100vh; /* Take up full viewport height */
+        top: 0;
+        right: 0;
+    }
 }

@@ -12,11 +12,18 @@
     position: relative;
     z-index: 15;
     left: 0.25vw;
-    /* max-height: calc(80vh/7); */
+    max-height: calc(80vh/7);
     height: 80%;
     /* max-width: calc(90vh/7); */
 } 
 
 .dayEventContainer.overflow {
     overflow-y: scroll; /* Show the vertical scrollbar if there's overflow */
+}
+
+/* Styles for mobile (screen width less than 768px) */
+@media screen and (max-width: 768px) {
+    .event {
+       font-size: xx-small;
+    }
 }

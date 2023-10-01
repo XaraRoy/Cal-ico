@@ -35,3 +35,16 @@ td{
     max-height: calc(90%/7);
 
 }
+
+
+/* Styles for mobile (screen width less than 768px) */
+@media screen and (max-width: 768px) {
+    th {
+       font-size: smaller;
+    }
+
+    button {
+        margin: 0;
+        font-size:  smaller;
+    }
+}
