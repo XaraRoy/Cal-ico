@@ -65,10 +65,10 @@ async function populateEvents(year, month,  day = null) {
                             eventDiv.textContent = eventTimestring + ' ' + eventName;
                             eventDiv.setAttribute('data-event-key', eventKey);
                             eventContainer.appendChild(eventDiv);
-                            console.log('placeing' + eventKey)
+                            //console.log('placeing' + eventKey)
 
                         } else {
-                            console.log('skipping' + eventName)
+                            //console.log('skipping' + eventName)
                         }
 
                         if (eventContainer.scrollHeight > eventContainer.clientHeight) {
@@ -87,6 +87,6 @@ async function populateEvents(year, month,  day = null) {
             });
         });
     } catch (error) {
-        console.error(error);
+        //console.error(error);
     }
 }
