@@ -1,4 +1,5 @@
 from flask import Flask, current_app, jsonify, request, Response
+from datetime import datetime, timedelta
 import calendar
 import os
 from deta import Deta
@@ -23,6 +24,66 @@ def addDayValues(cal):
         cal = cal.replace(f'>{str(i)}</td>', f' dayvalue="{str(i)}">{str(i)}</td>' )
     return cal
 
+def generate_recurring_dates(event_data):
+    # Parse event date and recurrence end date
+    event_date = datetime.strptime(event_data['eventDate'], '%Y-%m-%d')
+    print('initial date:', event_date)
+    recurrence_end_date = datetime.strptime(event_data['selectedRecurrence']['endDate'], '%Y-%m-%d')
+    print('end date', recurrence_end_date)
+    # Initialize a list to store the recurring dates
+    recurring_dates = []
+
+    # Calculate dates based on recurrence type
+    if event_data['selectedRecurrence']['type'] == 'Daily':
+        interval = timedelta(days=1)
+        print('type: daily', interval)
+        while event_date <= recurrence_end_date:
+            recurring_dates.append(event_date.strftime('%Y-%m-%d'))
+            event_date += interval
+    elif event_data['selectedRecurrence']['type'] == 'Weekly':
+        interval = timedelta(days=1)
+        selected_days = event_data['selectedRecurrence']['daysOfWeek']
+        print('type: weekly', interval, selected_days)
+
+        while event_date <= recurrence_end_date:
+            if event_date.strftime('%A').lower() in selected_days:
+                recurring_dates.append(event_date.strftime('%Y-%m-%d'))
+            event_date += interval
+    elif event_data['selectedRecurrence']['type'] == 'Monthly':
+        day_of_month = int(event_data['selectedRecurrence']['dayOfMonth'])
+        print('type: monthly', day_of_month)
+
+        while event_date <= recurrence_end_date:
+            # Calculate the next valid date for the specified day of the month
+            next_month = event_date.month + 1
+            next_year = event_date.year
+
+            if next_month > 12:
+                next_month = 1
+                next_year += 1
+
+            next_date = datetime(next_year, next_month, day_of_month)
+
+            # Ensure the next date is within the recurrence end date
+            if next_date <= recurrence_end_date:
+                event_date = next_date
+                recurring_dates.append(event_date.strftime('%Y-%m-%d'))
+            else:
+                break
+
+             
+    return recurring_dates
+
+def submit_recurring_event(event_data):
+    for date in generate_recurring_dates(event_data):
+        eventYear, eventMonth, eventDay = date.split('-')
+        event_data['eventDate'] = date
+        event_data['eventYear'] = eventYear
+        event_data['eventMonth'] = eventMonth
+        event_data['eventDay'] = eventDay
+        event_data['eventType'] = 'reoccuring'
+        events = deta.Base('events')
+        events.put(event_data)
 
 
 @app.route("/")
@@ -42,12 +103,14 @@ def root():
 
 
         html_cal = calendar.HTMLCalendar(firstweekday=0)
-        # Todo Get these dynamically, and update the js to do so as well
-        year = 2023
-        month = 9
+        now = datetime.now()
+        year = now.year
+        month = now.month
 
+
+        meta = '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
         styles = cssLink('table') + cssLink('main') + cssLink('eventMenu') + cssLink('events') + cssLink('cat')
-        head = '<head>' + '\n' + styles + '\n' + '</head>' + "\n"
+        head = '<head>' + '\n' + styles + '\n' + meta + '\n' + '</head>' + "\n"
 
         cat = '''
         <div>
@@ -61,7 +124,7 @@ def root():
         <div id="eventContainer" style="display: none;">
             <div id="eventMenu" class="eventMenu" style="display: none;">
                 <div id='DateContainer' class="eventContainterInputs">
-                    <input type="text" id="eventDate" placeholder="Enter date"><br>
+                    <input type="date" id="eventDate"><br>
                 </div>
                 <div id='eventTime' class="eventContainterInputs">
                     <select id="hour">
@@ -119,13 +182,17 @@ def root():
                     <option value="monthly">Monthly</option>
                 </select>
                 
+                <div id='recurrenceEndDateContainer' style="display: none" >
+                    <label for="end-date">End Date:</label>
+                    <input type="date" id="end-date" name="end-date">
+                </div>   
                 
                 <div id="weekly-options" style="display: none;">
-                    <input type="checkbox" id="day-sunday" name="day-sunday" value="Sunday">
+                    <input type="checkbox" id="day-sunday" name="day-sunday" value="sunday">
                     <label for="day-sunday">Sunday</label>
-                    <input type="checkbox" id="day-monday" name="day-monday" value="Monday">
+                    <input type="checkbox" id="day-monday" name="day-monday" value="monday">
                     <label for="day-monday">Monday</label>
-                    <input type="checkbox" id="day-tuesday" name="day-tuesday" value="tueday">
+                    <input type="checkbox" id="day-tuesday" name="day-tuesday" value="tuesday">
                     <label for="day-tuesday">Tuesday</label>
                     <input type="checkbox" id="day-wednesday" name="day-wednesday" value="wednesday">
                     <label for="day-wednesday">Wednesday</label>
@@ -147,6 +214,7 @@ def root():
                 <label for="notification-frequency">Notify Me:</label>
                 <select id="notification-frequency" name="notification-frequency">
                     <option value="never">Never</option>
+                    <option value="5">5 Minutes</option>
                     <option value="10">10 Minutes</option>
                     <option value="30">30 Minutes</option>
                     <option value="60">1 Hour</option>
@@ -198,13 +266,16 @@ def submit_form():
     try:
         eventData = request.json
 
-        if eventData is None or not all(field in eventData for field in ['eventName', 'eventDate', 'eventDescription', 'timeString', 'selectedRecurrence', 'notificationFrequency']):
+        if eventData and all(field in eventData for field in ['eventName', 'eventDate', 'timeString']):
+
+            events = deta.Base('events')
+            events.put(eventData)
+            if eventData['selectedRecurrence']:
+                submit_recurring_event(eventData)
+            return jsonify({'success': True})
+        else:
             return jsonify({'success': False, 'error': 'Invalid eventData'})
 
-        events = deta.Base('events')
-        events.put(eventData)
-        
-        return jsonify({'success': True})
     except:
         return jsonify({'success': False, 'error': str(traceback.format_exc())}), 500
 
