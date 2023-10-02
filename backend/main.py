@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from deta import Deta
 from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 import requests
 import os
 import json
@@ -8,7 +9,6 @@ import traceback
 from pywebpush import WebPushException, webpush
 
 
-print("logging hello world", flush=True)
 
 deta = Deta()
 eventDB = deta.Base("events") 
@@ -51,16 +51,17 @@ def send_push(jsonData):
         )
 
         print("Notification Sent Successfully", flush=True)
-        return jsonify({'success': True})
+        #return jsonify({'success': True})
     except:
         print("Failed pushing Notifications", flush=True)
-        return jsonify({'success': False, 'error': str(traceback.format_exc())})
 
 @app.route('/get_notifications')
 def get_notifications():
-    print("attempting to get notifications", flush=True)
     try:
-        now = datetime.now()
+
+        events = deta.Base('events')
+        randomEvent = events.fetch().items[-1]
+        now = datetime.now(ZoneInfo(randomEvent['timeZone']))
         current_Year = now.year
         current_Month = now.month
         current_Day = now.day
@@ -69,7 +70,7 @@ def get_notifications():
         current_5_min_window = (current_minute//5) * 5
         # Construct the formatted time string
         formatted_time = f"{current_Year}-{current_Month:02d}-{current_Day:02d} {current_hour:02d}:{current_5_min_window:02d}"
-        events = deta.Base('events')
+
         possible_events = []
 
         for i in range (0, 4):
@@ -98,6 +99,7 @@ def get_notifications():
             
             # Parse the time from the time string
             time_obj = datetime.strptime(time_string, '%I:%M %p').time()
+            # print(time_obj)
             
             # Set the time of the event_date to match the time from time_string
             event_date = event_date.replace(hour=time_obj.hour, minute=time_obj.minute)
@@ -106,7 +108,7 @@ def get_notifications():
             notification_time = event_date  - timedelta(minutes=notification_frequency_minutes)
 
             
-            formatted_notification_time = notification_time.strftime('%Y-%m-%d %I:%M')
+            formatted_notification_time = notification_time.strftime('%Y-%m-%d %H:%M')
             return formatted_notification_time
         
         def constructNotificationMessage(event):
@@ -138,15 +140,16 @@ def get_notifications():
             notification_json = json.dumps(notification_message)
             return notification_json
 
-        notified = False
+        notified  = False
         for daysEvents in filtered_data:
             for event in daysEvents:
+
                 notifyAt = notification_time(event)
                 if notifyAt == formatted_time:
-                    print("sending a notification", flush=True)
                     notified = True
-
-                    send_push(constructNotificationMessage(event))
+                    notification_message = constructNotificationMessage(event)
+                    print(f'sending {notification_message}', flush=True)
+                    send_push(notification_message)
 
         if not notified:
             print("No Notification times matched", flush=True)
@@ -175,8 +178,7 @@ def handle_space_action():
         elif event_id == "push_test":
             print("starting the push_test action", flush=True)
             send_push(json.dumps({'title':'Test Notification', 'body':'Scheduled Test Message'}))
-            print("starting the check_calendar_event action on the wrong route" , flush=True)
-            get_notifications()
+
 
             return jsonify(success=True, message="message pushed")
         else:
