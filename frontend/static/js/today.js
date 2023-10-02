@@ -15,7 +15,7 @@ function highlightToday() {
     cells.forEach(function (cell) {
         var cellDay = parseInt(cell.textContent.trim());
         if (cellDay ===  today.getDate() && selectedMonth === getMonthName(today.getMonth() + 1) && selectedYear === today.getFullYear()) {
-            cell.style.backgroundColor = "yellow";
+            cell.style.backgroundColor = "8ac4a5";
         } else {
             cell.style.backgroundColor = "";
         }
