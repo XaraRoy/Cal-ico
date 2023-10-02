@@ -148,6 +148,7 @@ function addEventMenus() {
             const eventMonth = eventDate.split('-')[1];
             const eventDay = eventDate.split('-')[2];
             const eventYear = eventDate.split('-')[0];
+            const timeZone =  Intl.DateTimeFormat().resolvedOptions().timeZone;
 
             // Create a data object to send in the POST request
             const data = {
@@ -157,6 +158,7 @@ function addEventMenus() {
                 'eventDay': eventDay,
                 'eventYear': eventYear,
                 'timeString': timeString,
+                'timeZone': timeZone,
                 'eventDescription': eventDescription,
                 'selectedRecurrence': selectedRecurrence,
                 'notificationFrequency': notificationFrequency
