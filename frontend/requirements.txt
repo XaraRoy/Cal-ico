@@ -1,3 +1,6 @@
 flask
 gunicorn
 datetime
+deta
+requests
+bs4
