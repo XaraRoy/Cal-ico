@@ -1,2 +1,13 @@
 .venv/
 Spacefile
+/backendNode/node_modules/*
+*.json
+*.png
+*.jpg
+config.py
+*.ico
+test.ipynb
+spacehack.code-workspace
+.gitignore
+pets.json
+.spaceignore
