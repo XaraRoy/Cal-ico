@@ -6,6 +6,7 @@ table {
     table-layout: fixed;
     position: absolute;
     z-index: 0;
+    background-color: rgba(0, 0, 0, 0.1);
 }
 
 tbody{
