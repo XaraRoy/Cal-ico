@@ -89,6 +89,42 @@ async function populateEvents(year, month,  day = null) {
                     }
                 });
             });
+            eventContainers = document.querySelectorAll('.dayEventContainer');
+            eventContainers.forEach(dayEventContainer => {
+                // Get all the events within the dayEventContainer
+                const events = Array.from(dayEventContainer.querySelectorAll('.event'));
+
+                // Sort the events based on time
+                events.sort((eventA, eventB) => {
+                    // Extract the time from the data-event-key attribute
+                    const timeA = eventA.getAttribute('data-event-key').split('--')[0];
+                    const timeB = eventB.getAttribute('data-event-key').split('--')[0];
+
+                    const [hoursA, minutesA, periodA] = timeA.match(/(\d+):(\d+) (AM|PM)/).slice(1);
+                    const [hoursB, minutesB, periodB] = timeB.match(/(\d+):(\d+) (AM|PM)/).slice(1);
+                    // Convert hours to 24-hour format for comparison
+                    const hoursA24 = periodA === 'PM' ? parseInt(hoursA) + 12 : parseInt(hoursA);
+                    const hoursB24 = periodB === 'PM' ? parseInt(hoursB) + 12 : parseInt(hoursB);
+                  
+                    // Compare based on 24-hour format
+                    if (hoursA24 < hoursB24) return -1; // Event A is before Event B
+                    if (hoursA24 > hoursB24) return 1;  // Event A is after Event B
+                  
+                    // If hours are the same, compare minutes
+                    if (minutesA < minutesB) return -1; // Event A is before Event B
+                    if (minutesA > minutesB) return 1;  // Event A is after Event B
+                  
+                    // If both hours and minutes are the same, they are equal
+                    return 0;
+                })
+                // Clear the existing events in dayEventContainer
+                dayEventContainer.innerHTML = '';
+
+                // Append the sorted events back to dayEventContainer
+                events.forEach(event => {
+                dayEventContainer.appendChild(event);
+                });
+            });
         });
     } catch (error) {
         //console.error(error);
