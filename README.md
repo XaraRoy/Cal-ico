@@ -10,6 +10,12 @@
 2. **Set Up Recurring Events**
    Simplify your planning by setting up recurring events. Whether it's daily, weekly, or monthly, Cal-ico makes it easy to automate your routine events, saving you time and effort.
 
+3. **No data collected or sold**
+   We take your privacy seriously. Cal-ico is committed to ensuring your data remains private and secure. We do not collect or sell any of your personal information. 
+
+4. **Completly open source**
+   Cal-ico is built on the principles of transparency and collaboration. Our entire codebase is open source, which means it's freely accessible for anyone to view, modify, and contribute to.
+
 ## How to Use
 
 ### Getting Push Notifications:
