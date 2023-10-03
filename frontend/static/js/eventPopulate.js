@@ -65,6 +65,10 @@ async function populateEvents(year, month,  day = null) {
                             eventDiv.textContent = eventTimestring + ' ' + eventName;
                             eventDiv.setAttribute('data-event-key', eventKey);
                             eventContainer.appendChild(eventDiv);
+                            eventDiv.addEventListener("click", function() {
+                                // TODO EVent Updating
+                                // console.log('eventKey:', eventKey)
+                            });
                             //console.log('placeing' + eventKey)
 
                         } else {
