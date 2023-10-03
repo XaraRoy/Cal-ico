@@ -13,7 +13,7 @@ spriteImage.src="/setup/images/resized_Spritesheet"
 
 const flippedspriteImage = new Image()
 //flippedspriteImage.src="https://purrfect_planner-1-z2375828.deta.app/setup/images/flipped_default_sprite"
-flippedspriteImage.src="/setup/images/flipped_default_sprite"
+ flippedspriteImage.src="/setup/images/flipped_default_sprite"
 function game(){
 
 
@@ -21,9 +21,9 @@ function game(){
 	const ctx = canvas.getContext('2d')
 
 	const ROWS = 1
-	const COLUMNS = 2
-	const SPRITE_WIDTH = spriteImage.width / COLUMNS;
-	const SPRITE_HEIGHT = spriteImage.height / ROWS;
+	const COLUMNS = 5
+	const SPRITE_WIDTH = 320;
+	const SPRITE_HEIGHT = 320;
 	//console.log('sprite W, H', SPRITE_WIDTH, SPRITE_HEIGHT)
 	const CalHeader = document.querySelector('th.month').getBoundingClientRect()
 	const HeaderBottom = CalHeader.bottom
@@ -42,7 +42,7 @@ function game(){
 
 	// {'name' : {'row': rowNumber, 'column' : columnMax}}
 	const ANIMATIONKEY = {
-		'blink' : {'row': 1, 'column' : 2},
+		'blink' : {'row': 1, 'column' : 6},
 		'pace' : {'row': 1, 'column' : 1}
 		};
 
@@ -57,7 +57,8 @@ function game(){
 		};		
 	}
 
-	var blinkframes = 3
+	const minBlinkFrames = 6
+	var blinkframes = minBlinkFrames
 
 	function animate(){
 
@@ -68,7 +69,7 @@ function game(){
 			
 		} else if (CURRENT_ANIMATION == 'blink' && blinkframes == 0){
 			CURRENT_ANIMATION = 'pace'
-			blinkframes = 3
+			blinkframes = minBlinkFrames
 		}
 
 		if (GAMEFRAME % STAGGERFRAMES == 0){
@@ -89,7 +90,7 @@ function game(){
 					//XPOS ++;
 				if (XPOS < Math.floor(calleft)){
 					XDIRECTION = "RIGHT"
-				} else if (XPOS > Math.floor(calright)-TARGETSPRITESIZE -10){
+				} else if (XPOS > Math.floor(calright)-TARGETSPRITESIZE -20){
 					XDIRECTION = "LEFT"
 				};
 			
@@ -101,6 +102,7 @@ function game(){
 				} else {
 					XPOS = XPOS - 3;
 					ctx.drawImage(spriteImage, 0, TOP_BUFFER, SPRITE_WIDTH, SPRITE_HEIGHT, XPOS, YPOS, TARGETSPRITESIZE , TARGETSPRITESIZE);
+
 					
 				}
 				
@@ -108,13 +110,17 @@ function game(){
 			}
 
 			if (CURRENT_ANIMATION == 'blink'){
-				STAGGERFRAMES = 60
+				STAGGERFRAMES = 10
 				blinkframes = blinkframes - 1
-				//console.log(blinkframes)
-				ctx.drawImage(spriteImage, SPRITE_WIDTH*(FRAME - 1), TOP_BUFFER, SPRITE_WIDTH, SPRITE_HEIGHT*ANIMATIONKEY.blink.row, XPOS, YPOS, TARGETSPRITESIZE , TARGETSPRITESIZE);
+
+				ctx.drawImage(spriteImage,
+					 SPRITE_WIDTH*(FRAME - 1), TOP_BUFFER + SPRITE_HEIGHT*(ANIMATIONKEY.blink.row - 1),  // SX, SY
+					  SPRITE_WIDTH, SPRITE_HEIGHT, // sw, sh
+					   XPOS, YPOS, TARGETSPRITESIZE , TARGETSPRITESIZE); //DX, DY, DW, DH
 
 
 			}
+
 		
 		};
 		GAMEFRAME = GAMEFRAME + 1;
@@ -135,7 +141,7 @@ animate()
 function showViewport() {
   //console.log('width', document.documentElement.clientWidth, window.innerWidth);
   //console.log('height', document.documentElement.clientHeight, window.innerHeight);
-  console.log('setting viewport')
+  // console.log('setting viewport')
   var calendar = document.querySelector('tbody').getBoundingClientRect()
   calBottom = calendar.bottom
   calTop= calendar.top
