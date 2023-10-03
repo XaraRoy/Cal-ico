@@ -1,11 +1,32 @@
-// service.js
+let urlString = null;
 
-
+self.addEventListener('install', function(event) {
+    // Pre-cache the URL when the service worker is installed
+    event.waitUntil(
+        fetch('/setup/origin')
+            .then(function(response) {
+                if (response.ok) {
+                    return response.text();
+                } else {
+                    throw new Error('Failed to fetch data from the server');
+                }
+            })
+            .then(function(responseString) {
+                urlString = responseString + "/";
+            })
+            .catch(function(error) {
+                console.error('Error:', error);
+            })
+    );
+});
 
 self.addEventListener('notificationclick', function(event) {
     event.notification.close();
-    // Handle the notification click event here, e.g., open a specific URL.
-    clients.openWindow('https://purrfect_planner-1-z2375828.deta.app/');
+
+    // Open a window with the stored oldString when the notification is clicked
+    if (urlString) {
+        clients.openWindow(urlString);
+    }
 });
 
 self.addEventListener('push', function(event) {
@@ -63,7 +84,7 @@ self.addEventListener('activate', function(event) {
         }
 
         
-        await fetch(origin + '/send_push', {
+        await fetch(urlString + '/send_push', {
             method: 'POST',
             body: JSON.stringify(subscription),
         });
