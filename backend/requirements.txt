@@ -1,0 +1,5 @@
+flask
+gunicorn
+datetime
+pywebpush
+deta
