@@ -1,4 +1,4 @@
-from flask import Flask, current_app, jsonify, request, Response
+from flask import Flask, current_app, jsonify, request, Response, send_file
 from datetime import datetime, timedelta
 import calendar
 import os
@@ -108,7 +108,12 @@ def root():
         month = now.month
 
 
-        meta = '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
+        meta = '''
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="shortcut icon" href="/get_favicon">
+        <meta name="msapplication-TileColor" content="#ec8d96">
+        <meta name="theme-color" content="#ec8d96">
+        '''
         styles = cssLink('table') + cssLink('main') + cssLink('eventMenu') + cssLink('events') + cssLink('cat')
         head = '<head>' + '\n' + styles + '\n' + meta + '\n' + '</head>' + "\n"
 
@@ -260,6 +265,10 @@ def root():
     except:
         return jsonify({'error': str(traceback.format_exc())}), 500
 
+@app.route('/get_favicon')
+def get_favicon():
+    filename = './favicon.ico'
+    return send_file(filename)
 
 @app.route('/save_event', methods=['POST'])
 def submit_form():
@@ -279,7 +288,6 @@ def submit_form():
     except:
         return jsonify({'success': False, 'error': str(traceback.format_exc())}), 500
 
-
 @app.route('/setup/public_key')
 def setup_vapid_key():
     try:
@@ -290,7 +298,6 @@ def setup_vapid_key():
     except:
         return jsonify({'error': str(traceback.format_exc())}), 500
 
-
 @app.route('/setup/api_key')
 def setup_api_key():
     try:
@@ -299,7 +306,6 @@ def setup_api_key():
     except:
         return jsonify({'error': str(traceback.format_exc())}), 500
 
-
 @app.route('/setup/origin')
 def setup_origin():
     try:
@@ -307,7 +313,6 @@ def setup_origin():
         return jsonify(origin), 200
     except:
         return jsonify({'error': str(traceback.format_exc())}), 500
-
 
 @app.route('/setup/subscription', methods=['PUT'])
 def store_subscription_info():
@@ -318,7 +323,6 @@ def store_subscription_info():
         return jsonify({'message': 'Subscription data stored successfully'})
     except Exception as e:
         return jsonify({'error': str(traceback.format_exc())}), 500
-
 
 @app.route('/setup/images/<image_name>/')
 def download_img(image_name):
@@ -346,8 +350,6 @@ def getMonthlyEvents(year, month, day):
     except Exception as e:
         return jsonify({'error': str(e), 'traceback': traceback.format_exc(), 'success': False}), 500
 
-
-
 @app.route('/cal/<year>/<month>',  methods=['GET'])
 def updateTable(year, month):
     try:
@@ -358,8 +360,6 @@ def updateTable(year, month):
         return addDayValues(cal)
     except:
         return jsonify({'error': str(traceback.format_exc())}), 500
-
-    
 
 @app.route('/service.js', methods=['GET'])
 def sw():
