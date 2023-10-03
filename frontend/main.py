@@ -6,17 +6,27 @@ from deta import Deta
 from bs4 import BeautifulSoup
 import requests
 import traceback
+from config import COLLECTION_KEY, TEST_STRING
+
+print(f'config.py says {TEST_STRING}', flush=True)
 
 deta = Deta()
 app = Flask(__name__)
 
+
+def log(message):
+    print(message, flush=True)
+
 def cssLink(name):
+    log('linking css: '+ name)
     return f'<link rel="stylesheet" type="text/css" href="static/css/{name}.css"> \n'
 
 def jsLink(name):
-       return f'<script src="static/js/{name}.js"></script> \n'
+    log('linking js: '+ name)
+    return f'<script src="static/js/{name}.js"></script> \n'
 
 def addDayValues(cal):
+    log('adding day values to the calendar')
     soup = BeautifulSoup(cal)
     last_day_cell = soup.findAll('td', class_=lambda value: value and 'noday' not in value)
     lastDay = int(last_day_cell[-1].get_text())
@@ -25,25 +35,26 @@ def addDayValues(cal):
     return cal
 
 def generate_recurring_dates(event_data):
+    log('generating recurring dates')
     # Parse event date and recurrence end date
     event_date = datetime.strptime(event_data['eventDate'], '%Y-%m-%d')
-    print('initial date:', event_date)
+    log('initial date:' + event_date)
     recurrence_end_date = datetime.strptime(event_data['selectedRecurrence']['endDate'], '%Y-%m-%d')
-    print('end date', recurrence_end_date)
+    log('end date' + recurrence_end_date)
     # Initialize a list to store the recurring dates
     recurring_dates = []
 
     # Calculate dates based on recurrence type
     if event_data['selectedRecurrence']['type'] == 'Daily':
         interval = timedelta(days=1)
-        print('type: daily', interval)
+        log('type: daily'+ interval)
         while event_date <= recurrence_end_date:
             recurring_dates.append(event_date.strftime('%Y-%m-%d'))
             event_date += interval
     elif event_data['selectedRecurrence']['type'] == 'Weekly':
         interval = timedelta(days=1)
         selected_days = event_data['selectedRecurrence']['daysOfWeek']
-        print('type: weekly', interval, selected_days)
+        log('type: weekly'+ interval+ selected_days)
 
         while event_date <= recurrence_end_date:
             if event_date.strftime('%A').lower() in selected_days:
@@ -51,7 +62,7 @@ def generate_recurring_dates(event_data):
             event_date += interval
     elif event_data['selectedRecurrence']['type'] == 'Monthly':
         day_of_month = int(event_data['selectedRecurrence']['dayOfMonth'])
-        print('type: monthly', day_of_month)
+        log('type: monthly'+ day_of_month)
 
         while event_date <= recurrence_end_date:
             # Calculate the next valid date for the specified day of the month
@@ -75,6 +86,7 @@ def generate_recurring_dates(event_data):
     return recurring_dates
 
 def submit_recurring_event(event_data):
+    log('submitting the recurring events')
     for date in generate_recurring_dates(event_data):
         eventYear, eventMonth, eventDay = date.split('-')
         event_data['eventDate'] = date
@@ -85,9 +97,29 @@ def submit_recurring_event(event_data):
         events = deta.Base('events')
         events.put(event_data)
 
+def getSpriteSheet(spritesheetname):
+    log('checking status of a spritesheet: '+spritesheetname)
+    deta = Deta()
+    src = deta.Drive('src')
+    response = src.get(spritesheetname+'.png')
+    if response ==  None:
+        log(spritesheetname + 'not available, getting from collection')
+
+        collection = Deta(COLLECTION_KEY)
+        collection_drive = collection.Drive('spritesheets')
+        response =  collection_drive.get(spritesheetname+'.png')
+
+        content = response.read()
+        src.put((spritesheetname+'.png'), content)
+        log(spritesheetname+" placed in src")
+
+    
+
+
 
 @app.route("/")
 def root():
+    print('"/" requested')
     try:
 
         # Initialize the Node Backend
@@ -101,6 +133,8 @@ def root():
             print(f"Request error: {e}")
 
 
+        getSpriteSheet('resized_Spritesheet')
+        getSpriteSheet('flipped_default_sprite')
 
         html_cal = calendar.HTMLCalendar(firstweekday=0)
         now = datetime.now()
@@ -261,17 +295,20 @@ def root():
         body = '<body>'  + '\n' + addDayValues(cal) + '\n' + eventMenu + "\n" + cat + "\n" +'</body>'
         javascript = jsLink('eventPopulate') + jsLink('monthSelect') + jsLink('today') + jsLink('notify') + jsLink('eventMenu') + jsLink('cat')
         html = head + body + javascript
+        log('html constructed')
         return html
     except:
         return jsonify({'error': str(traceback.format_exc())}), 500
 
 @app.route('/get_favicon')
 def get_favicon():
+    log('serving favicon')
     filename = './favicon.ico'
     return send_file(filename)
 
 @app.route('/save_event', methods=['POST'])
 def submit_form():
+    log('submitting an event')
     try:
         eventData = request.json
 
@@ -288,8 +325,15 @@ def submit_form():
     except:
         return jsonify({'success': False, 'error': str(traceback.format_exc())}), 500
 
+@app.route('/update_event', methods=['POST'])
+def update_event():
+    log('updating an event')
+    eventData = request.json
+    print(eventData, flush=True)
+
 @app.route('/setup/public_key')
 def setup_vapid_key():
+    log('serving the vapid key')
     try:
         db = deta.Base('setup')
         response = db.get('public-key')
@@ -300,6 +344,7 @@ def setup_vapid_key():
 
 @app.route('/setup/api_key')
 def setup_api_key():
+    log('serving the api key')
     try:
         api_key = os.environ.get('DETA_API_KEY')
         return jsonify(api_key)
@@ -308,6 +353,7 @@ def setup_api_key():
 
 @app.route('/setup/origin')
 def setup_origin():
+    log('serving the origin')
     try:
         origin = f"https://{os.getenv('DETA_SPACE_APP_HOSTNAME')}"
         return jsonify(origin), 200
@@ -316,6 +362,7 @@ def setup_origin():
 
 @app.route('/setup/subscription', methods=['PUT'])
 def store_subscription_info():
+    log('storing the subscription submission')
     try:
         data = request.json
         db = deta.Base('setup')
@@ -326,17 +373,20 @@ def store_subscription_info():
 
 @app.route('/setup/images/<image_name>/')
 def download_img(image_name):
+    log('serving an image: '+image_name)
     try:
         src = deta.Drive('src')
         res = src.get(f'{image_name}.png')
         image = Response(res.iter_chunks(1024), content_type="image/png")
         return image
     except:
+        log(str(traceback.format_exc()))
         return jsonify({'error': str(traceback.format_exc())}), 500
 
 @app.route('/events/<int:year>/<int:month>/<int:day>', methods=['GET'])
 @app.route('/events/<int:year>/<int:month>', defaults={'day': None}, methods=['GET'])
 def getMonthlyEvents(year, month, day):
+    log('serving the months events')
     try:
         monthstring = str(month).zfill(2)
         events = deta.Base('events')
@@ -352,6 +402,7 @@ def getMonthlyEvents(year, month, day):
 
 @app.route('/cal/<year>/<month>',  methods=['GET'])
 def updateTable(year, month):
+    log('building the next/previous month calenedar html')
     try:
         html_cal = calendar.HTMLCalendar(firstweekday=0)
         cal = html_cal \
@@ -363,4 +414,5 @@ def updateTable(year, month):
 
 @app.route('/service.js', methods=['GET'])
 def sw():
+    log('serving the service.js file')
     return current_app.send_static_file('service.js')
