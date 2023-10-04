@@ -1,4 +1,4 @@
-async function populateEvents(year, month,  day = null) {
+async function populateEvents(year, month,  day = null, del = null) {
     try {
         // Define a function that returns a promise
         function getEvents() {
@@ -27,6 +27,12 @@ async function populateEvents(year, month,  day = null) {
         }
         // Await the promise returned by getEvents
         getEvents().then(eventData => {
+            if (del){
+                containersToClearOnDelete = document.querySelectorAll('.dayEventContainer');
+                containersToClearOnDelete.forEach(function (container){
+                    container.parentNode.removeChild(container);
+                });
+            };
             eventData.forEach(function (event) {
                 // Extract event information
                 const eventTimestring = event.timeString
@@ -54,21 +60,17 @@ async function populateEvents(year, month,  day = null) {
                             td.appendChild(eventContainer);
                         }
 
-                        const eventKey = `${eventTimestring}-${eventName}-${eventDay}-${eventMonth}`;
-
                         // Create a unique event key
+                        const eventKey = `${eventTimestring}-${eventName}-${eventDay}-${eventMonth}`;
                         const existingEvent = eventContainer.querySelector(`.event[data-event-key="${eventKey}"]`);
-
+                        
                         if (!existingEvent) {
                             const eventDiv = document.createElement('div');
                             eventDiv.className = 'event';
                             eventDiv.textContent = eventTimestring + ' ' + eventName;
                             eventDiv.setAttribute('data-event-key', eventKey);
                             eventContainer.appendChild(eventDiv);
-                            eventDiv.addEventListener("click", function() {
-                                // TODO EVent Updating
-                                // console.log('eventKey:', eventKey)
-                            });
+
                             //console.log('placeing' + eventKey)
 
                         } else {
@@ -122,11 +124,34 @@ async function populateEvents(year, month,  day = null) {
 
                 // Append the sorted events back to dayEventContainer
                 events.forEach(event => {
-                dayEventContainer.appendChild(event);
+                    dayEventContainer.appendChild(event);
+
+                    event.addEventListener("click", function () {
+                        const eventKey = event.getAttribute("data-event-key");
+                        //console.log('eventKey:', eventKey);
+                    
+                        // Fetch event details from the server
+                        fetch('/get_event_details', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ 'eventKey': eventKey }),
+                        })
+                        .then(response => response.json())
+                        .then(eventData => {
+                            // Populate the event menu with eventData
+                            populateEventMenu(eventData);
+                            //console.log(eventData);
+                        })
+                        .catch(error => {
+                            console.error("Error fetching event details:", error);
+                        });
+                    });
                 });
             });
         });
     } catch (error) {
-        //console.error(error);
+        console.error(error);
     }
 }

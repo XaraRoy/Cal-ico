@@ -38,23 +38,19 @@ def generate_recurring_dates(event_data):
     log('generating recurring dates')
     # Parse event date and recurrence end date
     event_date = datetime.strptime(event_data['eventDate'], '%Y-%m-%d')
-    log('initial date:' + event_date)
     recurrence_end_date = datetime.strptime(event_data['selectedRecurrence']['endDate'], '%Y-%m-%d')
-    log('end date' + recurrence_end_date)
     # Initialize a list to store the recurring dates
     recurring_dates = []
 
     # Calculate dates based on recurrence type
     if event_data['selectedRecurrence']['type'] == 'Daily':
         interval = timedelta(days=1)
-        log('type: daily'+ interval)
         while event_date <= recurrence_end_date:
             recurring_dates.append(event_date.strftime('%Y-%m-%d'))
             event_date += interval
     elif event_data['selectedRecurrence']['type'] == 'Weekly':
         interval = timedelta(days=1)
         selected_days = event_data['selectedRecurrence']['daysOfWeek']
-        log('type: weekly'+ interval+ selected_days)
 
         while event_date <= recurrence_end_date:
             if event_date.strftime('%A').lower() in selected_days:
@@ -62,7 +58,6 @@ def generate_recurring_dates(event_data):
             event_date += interval
     elif event_data['selectedRecurrence']['type'] == 'Monthly':
         day_of_month = int(event_data['selectedRecurrence']['dayOfMonth'])
-        log('type: monthly'+ day_of_month)
 
         while event_date <= recurrence_end_date:
             # Calculate the next valid date for the specified day of the month
@@ -81,8 +76,7 @@ def generate_recurring_dates(event_data):
                 recurring_dates.append(event_date.strftime('%Y-%m-%d'))
             else:
                 break
-
-             
+    log(f' generated {str(len(recurring_dates))} dates')
     return recurring_dates
 
 def submit_recurring_event(event_data):
@@ -227,21 +221,34 @@ def root():
                 </div>   
                 
                 <div id="weekly-options" style="display: none;">
-                    <input type="checkbox" id="day-sunday" name="day-sunday" value="sunday">
-                    <label for="day-sunday">Sunday</label>
-                    <input type="checkbox" id="day-monday" name="day-monday" value="monday">
-                    <label for="day-monday">Monday</label>
-                    <input type="checkbox" id="day-tuesday" name="day-tuesday" value="tuesday">
+                    <div style="display": 'flex'; 'flex-direction':'row';">
+                        <input type="checkbox" id="day-sunday" name="day-sunday" value="sunday">
+                        <label for="day-sunday">Sunday</label>
+                    </div>
+                    <div style="display": 'flex'; 'flex-direction':'row';">
+                        <input type="checkbox" id="day-monday" name="day-monday" value="monday">
+                        <label for="day-monday">Monday</label>
+                    </div>
+                        <div style="display": 'flex'; 'flex-direction':'row';">
+                        <input type="checkbox" id="day-tuesday" name="day-tuesday" value="tuesday">
                     <label for="day-tuesday">Tuesday</label>
-                    <input type="checkbox" id="day-wednesday" name="day-wednesday" value="wednesday">
-                    <label for="day-wednesday">Wednesday</label>
-                    <input type="checkbox" id="day-thursday" name="day-thursday" value="thursday">
-                    <label for="day-thursday">Thursday</label>
-                    <input type="checkbox" id="day-friday" name="day-friday" value="friday">
-                    <label for="day-friday">Friday</label>
-                    <input type="checkbox" id="day-saturday" name="day-saturday" value="saturday">
-                    <label for="day-saturday">Saturday</label>
-
+                    </div>
+                    <div style="display": 'flex'; 'flex-direction':'row';">
+                        <input type="checkbox" id="day-wednesday" name="day-wednesday" value="wednesday">
+                        <label for="day-wednesday">Wednesday</label>
+                    </div>
+                    <div style="display": 'flex'; 'flex-direction':'row';">
+                        <input type="checkbox" id="day-thursday" name="day-thursday" value="thursday">
+                        <label for="day-thursday">Thursday</label>
+                    </div>
+                    <div style="display": 'flex'; 'flex-direction':'row';">
+                        <input type="checkbox" id="day-friday" name="day-friday" value="friday">
+                        <label for="day-friday">Friday</label>
+                    </div>
+                    <div style="display": 'flex'; 'flex-direction':'row';">
+                        <input type="checkbox" id="day-saturday" name="day-saturday" value="saturday">
+                        <label for="day-saturday">Saturday</label>
+                    </div>
                 </div>
                 
                 <div id="monthly-options" style="display: none;">
@@ -270,6 +277,8 @@ def root():
                 <div id='buttonContainer' class="eventContainterInputs">
                     <button id="saveEvent">Save</button>
                     <button id="cancelEvent">Cancel</button>
+                    <button id="deleteEvent" style="display: none;">Delete</button>
+
                 </div>
             </div>
         </div>
@@ -312,24 +321,84 @@ def submit_form():
     try:
         eventData = request.json
 
-        if eventData and all(field in eventData for field in ['eventName', 'eventDate', 'timeString']):
-
+        if eventData and all(field in eventData and eventData[field] != '' for field in ['eventName', 'eventDate', 'timeString']):
             events = deta.Base('events')
             events.put(eventData)
             if eventData['selectedRecurrence']:
                 submit_recurring_event(eventData)
-            return jsonify({'success': True})
+            return jsonify({'success': True}), 200
         else:
-            return jsonify({'success': False, 'error': 'Invalid eventData'})
+            return jsonify({'success': False, 'error': 'Invalid eventData'}), 500
 
     except:
+        # log(str(traceback.format_exc()))
         return jsonify({'success': False, 'error': str(traceback.format_exc())}), 500
+
+
+@app.route('/get_event_details', methods=['POST'])
+def get_event():
+    log('requesting an event')
+    try:
+        eventData = request.json
+        eventKey = eventData['eventKey']
+        # log(eventKey)
+        eventTime = eventKey.split('-')[0]
+        eventName = eventKey.split('-')[1]
+        eventDay = eventKey.split('-')[2].zfill(2)
+        eventMonth = eventKey.split('-')[3].zfill(2)
+        # log(eventTime+eventName+eventDay+eventMonth)
+        eventDB = deta.Base('events')
+        eventResponse = eventDB.fetch({
+            'timeString': eventTime,
+            'eventName': eventName,
+            'eventDay': eventDay,
+            'eventMonth' : eventMonth,
+        })
+        event = eventResponse.items[0]
+        return jsonify(event), 200
+    except:
+        error = str(traceback.format_exc())
+        log(error)
+        return jsonify({'success': False, 'error':error}), 500
+
+
+@app.route('/delete_event', methods=['POST'])
+def delete_event():
+    try:
+        log('updating an event')
+        eventData = request.json
+        key = eventData.pop('key')
+
+        deta = Deta()
+        events = deta.Base('events')
+
+        events.delete(key)
+        log('eventDeleted')
+        return jsonify({'success': True}), 200
+    except:
+        log(str(traceback.format_exc()))
+        return jsonify({'success': False}), 500
+
+
 
 @app.route('/update_event', methods=['POST'])
 def update_event():
-    log('updating an event')
-    eventData = request.json
-    print(eventData, flush=True)
+    try:
+        log('updating an event')
+        events = deta.Base('events')
+        eventData = request.json
+        key = eventData.pop('key')
+        if eventData['selectedRecurrence']:
+            # TODO delete all matching events
+            # TODO submit new recurring events
+            pass
+        events.update(eventData, key)
+        print(eventData, flush=True)
+        return jsonify({'success': True}), 200
+    except:
+        log(str(traceback.format_exc()))
+        return jsonify({'success': False}), 500
+
 
 @app.route('/setup/public_key')
 def setup_vapid_key():
