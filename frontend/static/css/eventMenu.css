@@ -55,12 +55,25 @@ background-color: rgba(255, 0, 0, 0.699);
 }
 
 
-/* Styles for mobile (screen width less than 768px) */
+/* Styles for mobile (screen width less than X  px) */
 @media screen and (max-width: 768px) {
     #eventContainer {
         width: 100%; /* Take up full width on mobile */
         height: 100vh; /* Take up full viewport height */
         top: 0;
         right: 0;
+    }
+}
+
+/* Styles for mobile (screen width less than Ypx) */
+@media screen and (max-height: 800px) {
+    #eventContainer {
+        width: 100%; /* Take up full width on mobile */
+        height: 100vh; /* Take up full viewport height */
+    }
+
+    #eventMenu {
+        flex-wrap: wrap;
+
     }
 }
