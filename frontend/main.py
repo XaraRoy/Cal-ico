@@ -137,7 +137,7 @@ def root():
 
 
         meta = '''
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, max-scale=5.0, minimum-scale-1">
         <link rel="shortcut icon" href="/get_favicon">
         <meta name="msapplication-TileColor" content="#ec8d96">
         <meta name="theme-color" content="#ec8d96">
@@ -201,12 +201,13 @@ def root():
                 <div id='nameContainer' class="eventContainterInputs">
                     <input type="text" id="eventName" placeholder="Enter name"><br>
                 </div>
+                <fieldset class="eventContainterInputs">
+                <legend>Optional</legend>
+                
                 <div id='descriptionContainer' class="eventContainterInputs">
                     <textarea id="eventDescription" class="eventContainterInputs" placeholder="Enter description"></textarea><br>
                 </div>
-                <fieldset class="eventContainterInputs">
-                <legend>Recurrence</legend>
-                
+  
                 <label for="recurrence-type">Recurrence Type:</label>
                 <select id="recurrence-type" name="recurrence-type">
                     <option value="none">None</option>
@@ -221,31 +222,31 @@ def root():
                 </div>   
                 
                 <div id="weekly-options" style="display: none;">
-                    <div style="display": 'flex'; 'flex-direction':'row';">
+                    <div class='check-container' style="display: flex; flex-direction:row;">
                         <input type="checkbox" id="day-sunday" name="day-sunday" value="sunday">
                         <label for="day-sunday">Sunday</label>
                     </div>
-                    <div style="display": 'flex'; 'flex-direction':'row';">
+                    <div class='check-container' style="display: flex; flex-direction:row;">
                         <input type="checkbox" id="day-monday" name="day-monday" value="monday">
                         <label for="day-monday">Monday</label>
                     </div>
-                        <div style="display": 'flex'; 'flex-direction':'row';">
+                    <div class='check-container' style="display: flex; flex-direction:row;">
                         <input type="checkbox" id="day-tuesday" name="day-tuesday" value="tuesday">
                     <label for="day-tuesday">Tuesday</label>
                     </div>
-                    <div style="display": 'flex'; 'flex-direction':'row';">
+                    <div class='check-container' style="display: flex; flex-direction:row;">
                         <input type="checkbox" id="day-wednesday" name="day-wednesday" value="wednesday">
                         <label for="day-wednesday">Wednesday</label>
                     </div>
-                    <div style="display": 'flex'; 'flex-direction':'row';">
+                    <div class='check-container' style="display: flex; flex-direction:row;">
                         <input type="checkbox" id="day-thursday" name="day-thursday" value="thursday">
                         <label for="day-thursday">Thursday</label>
                     </div>
-                    <div style="display": 'flex'; 'flex-direction':'row';">
+                    <div class='check-container' style="display: flex; flex-direction:row;">
                         <input type="checkbox" id="day-friday" name="day-friday" value="friday">
                         <label for="day-friday">Friday</label>
                     </div>
-                    <div style="display": 'flex'; 'flex-direction':'row';">
+                    <div class='check-container' style="display: flex; flex-direction:row;">
                         <input type="checkbox" id="day-saturday" name="day-saturday" value="saturday">
                         <label for="day-saturday">Saturday</label>
                     </div>
@@ -255,7 +256,6 @@ def root():
                     <label for="day-of-month">Day of the Month:</label>
                     <input type="number" id="day-of-month" name="day-of-month" min="1" max="31">
                 </div>
-                </fieldset>
                 <div id="notify-me-div" class="eventContainterInputs">
                 <label for="notification-frequency">Notify Me:</label>
                 <select id="notification-frequency" name="notification-frequency">
@@ -272,6 +272,8 @@ def root():
                     <option value="4320">3 Days</option>
                 </select>
                 </div>
+                </fieldset>
+
 
 
                 <div id='buttonContainer' class="eventContainterInputs">

@@ -1,12 +1,12 @@
 table {
     width: 90%;
-    height: 90vh;
-    margin-top: 5vh;
-    margin-bottom: 5vh;
+    height: 95%;
+    top: 2.5%;
     table-layout: fixed;
     position: absolute;
     z-index: 0;
     background-color: rgba(0, 0, 0, 0.1);
+    border-color: #5f3244;
 }
 
 tbody{
@@ -15,14 +15,16 @@ tbody{
     height: 100%;
 }
 
-button{
-    margin-left: 5%;
-    margin-right: 5%;
-}
 
 th{
     height: 8vh;
 }
+
+th button{
+ margin-left: 5%;
+ margin-right: 5%;
+}
+
 
 td{
     text-align: left;

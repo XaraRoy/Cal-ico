@@ -194,15 +194,15 @@ function addEventMenus() {
 
         // Show the custom div corresponding to the selected recurrence type
         if (selectedValue === "weekly") {
-            weeklyOptionsDiv.style.display = "block";
-            recurrenceEndDateContainer.style.display =  'block';
+            weeklyOptionsDiv.style.display = "flex";
+            recurrenceEndDateContainer.style.display =  'flex';
 
         } else if (selectedValue === "monthly") {
-            monthlyOptionsDiv.style.display = "block";
-            recurrenceEndDateContainer.style.display =  'block';
+            monthlyOptionsDiv.style.display = "flex";
+            recurrenceEndDateContainer.style.display =  'flex';
 
         } else if (selectedValue === 'daily') {
-            recurrenceEndDateContainer.style.display =  'block';
+            recurrenceEndDateContainer.style.display =  'flex';
         }
     });
 

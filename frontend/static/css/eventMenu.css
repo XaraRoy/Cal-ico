@@ -2,7 +2,7 @@
     display: none;
     right: 35%;
     top: 25%;
-    width: 250px;
+    width: 275px;
     height: 650px;
     background-color: rgba(0, 0, 0, 0.699);
     z-index: 25;
@@ -15,22 +15,31 @@
 background-color: rgba(255, 0, 0, 0.699);
 }
 
+.buttonContainer{
+    margin: 0;
+    align-self: center;
+    flex-wrap: wrap;
+}
+
 .eventContainterInputs{
     display: flex;
     flex-direction: column;
     padding: 10;
     width: 200;
     justify-content: space-between;
+    border-color: #5f3244;
 }
 
 .eventMenu{
     display: flex;
-    background-color: wheat;
+    background-color: #ec8d96;
     flex-direction: column;
     width: 97%;
     height: 97%;
     justify-content: center;
     align-items: center;
+	left: 3%;
+	top: 3%;
 }
 
 #eventTime{
@@ -40,8 +49,15 @@ background-color: rgba(255, 0, 0, 0.699);
 }
 
 #weekly-options{
-    width: 75%;
+    /* width: 75%; */
+    display:flex;
+    flex-flow: column wrap;
+    height: 30vh;
+    justify-content: space-around;
+    max-height: 150px;
 }
+
+
 
 #eventDate{
     text-align: center;
@@ -53,12 +69,66 @@ background-color: rgba(255, 0, 0, 0.699);
 .nameContainer{
     height: auto;
 }
+textarea {
+    background-color: #d4759b;
+    border-color: #5f3244;
+}
+textarea::placeholder {
+    color:black;
+}
+
+input {
+    background-color: #d4759b;
+    border-color: #5f3244;
+}
+
+input:not([type='checkbox']) {    
+	width: 200;
+}
+
+input[type=checkbox] {
+    accent-color: #d4759b;
+    width: 20px;
+}
+
+input::placeholder {
+    color:black;
+}
+
+select{
+    background-color: #d4759b;
+    border-color: #5f3244;
+	width: 200;
+}
+.eventMenu button{
+    background-color: #d4759b;
+    border-color: #5f3244;
+	width: 200;
+}
+
+fieldset{
+	width: 210;
+	align-items: center;
+    display: flex;
+}
+
+
+#recurrenceEndDateContainer{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#day-of-month{
+    width: 50px !important;
+    margin-left: 10px;
+}
 
 
 /* Styles for mobile (screen width less than X  px) */
 @media screen and (max-width: 768px) {
     #eventContainer {
-        width: 100%; /* Take up full width on mobile */
+        width: 100vw; /* Take up full width on mobile */
         height: 100vh; /* Take up full viewport height */
         top: 0;
         right: 0;
@@ -68,12 +138,24 @@ background-color: rgba(255, 0, 0, 0.699);
 /* Styles for mobile (screen width less than Ypx) */
 @media screen and (max-height: 800px) {
     #eventContainer {
-        width: 100%; /* Take up full width on mobile */
+        width: 100vw; /* Take up full width on mobile */
         height: 100vh; /* Take up full viewport height */
+        left: 0;
+        top: 0;
     }
 
     #eventMenu {
         flex-wrap: wrap;
 
+    }
+
+    input[type=checkbox]{
+        margin-top: 2vh;
+    }
+    #weekly-options{
+        margin-top: 3vh;
+    }
+    fieldset{
+        height: 90%;
     }
 }
