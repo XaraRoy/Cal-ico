@@ -116,19 +116,19 @@ def root():
     print('"/" requested')
     try:
 
-        # Initialize the Node Backend
-        try:
-            url = '/node/'
+        # # Initialize the Node Backend
+        # try:
+        #     url = '/node/'
 
-            response = requests.get(url)
-            print(response.status_code)
+        #     response = requests.get(url)
+        #     print(response.status_code)
 
-        except requests.exceptions.RequestException as e:
-            print(f"Request error: {e}")
+        # except requests.exceptions.RequestException as e:
+        #     print(f"Request error: {e}")
 
 
-        getSpriteSheet('resized_Spritesheet')
-        getSpriteSheet('flipped_default_sprite')
+        getSpriteSheet('sleep_walk_blink_spritesheet')
+        getSpriteSheet('flipped_sleep_walk_blink_spritesheet')
 
         html_cal = calendar.HTMLCalendar(firstweekday=0)
         now = datetime.now()
@@ -137,7 +137,7 @@ def root():
 
 
         meta = '''
-        <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, max-scale=5.0, minimum-scale-1">
+        <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0">
         <link rel="shortcut icon" href="/get_favicon">
         <meta name="msapplication-TileColor" content="#ec8d96">
         <meta name="theme-color" content="#ec8d96">
@@ -207,6 +207,23 @@ def root():
                 <div id='descriptionContainer' class="eventContainterInputs">
                     <textarea id="eventDescription" class="eventContainterInputs" placeholder="Enter description"></textarea><br>
                 </div>
+                
+                <div id="notify-me-div" class="eventContainterInputs">
+                    <label for="notification-frequency">Notify Me:</label>
+                    <select id="notification-frequency" name="notification-frequency">
+                        <option value="never">Never</option>
+                        <option value="5">5 Minutes</option>
+                        <option value="10">10 Minutes</option>
+                        <option value="30">30 Minutes</option>
+                        <option value="60">1 Hour</option>
+                        <option value="180">3 Hours</option>
+                        <option value="360">6 Hours</option>
+                        <option value="720">12 Hours</option>
+                        <option value="1440">1 Day</option>
+                        <option value="2880">2 Days</option>
+                        <option value="4320">3 Days</option>
+                    </select>
+                </div>
   
                 <label for="recurrence-type">Recurrence Type:</label>
                 <select id="recurrence-type" name="recurrence-type">
@@ -256,22 +273,7 @@ def root():
                     <label for="day-of-month">Day of the Month:</label>
                     <input type="number" id="day-of-month" name="day-of-month" min="1" max="31">
                 </div>
-                <div id="notify-me-div" class="eventContainterInputs">
-                <label for="notification-frequency">Notify Me:</label>
-                <select id="notification-frequency" name="notification-frequency">
-                    <option value="never">Never</option>
-                    <option value="5">5 Minutes</option>
-                    <option value="10">10 Minutes</option>
-                    <option value="30">30 Minutes</option>
-                    <option value="60">1 Hour</option>
-                    <option value="180">3 Hours</option>
-                    <option value="360">6 Hours</option>
-                    <option value="720">12 Hours</option>
-                    <option value="1440">1 Day</option>
-                    <option value="2880">2 Days</option>
-                    <option value="4320">3 Days</option>
-                </select>
-                </div>
+
                 </fieldset>
 
 
