@@ -1,20 +1,21 @@
 # Cal-ico Event Scheduler
 
-## Releasing on Deta.Space October 6th!
-
 ## Features
 
-1. **Get Push Notifications for Events**
-   Stay on top of your schedule with our push notification feature. You'll receive timely reminders for your upcoming events, ensuring you're never caught off guard.
+1. **Optional Push Notifications for Events**
 
 2. **Set Up Recurring Events**
-   Simplify your planning by setting up recurring events. Whether it's daily, weekly, or monthly, Cal-ico makes it easy to automate your routine events, saving you time and effort.
 
 3. **No data collected or sold**
-   We take your privacy seriously. Cal-ico is committed to ensuring your data remains private and secure. We do not collect or sell any of your personal information. 
 
 4. **Completly open source**
-   Cal-ico is built on the principles of transparency and collaboration. Our entire codebase is open source, which means it's freely accessible for anyone to view, modify, and contribute to.
+
+5. **Custom colors for events**
+
+6. **12 and 24 hour time formats**
+
+7. **Automatic timezone setting**
+
 
 ## How to Use
 
@@ -26,6 +27,7 @@
 4. Approve the request for notifications.
 5. Set the notification time and preferences.
 6. Save the event, and you're all set to receive reminders!
+7. *You will only receive noticiations on the device you last connected with.
 
 ### Setting Up Recurring Events:
 
@@ -36,4 +38,11 @@
 5. Specify the recurrence pattern and end date.
 6. Save the event, and watch it repeat like clockwork!
 
-Cal-ico keeps your schedule organized, so you have more time to enjoy the company of your mini cat pet. Never miss a beat with our push notifications and simplify your life with recurring events.
+### Changing your time format
+1. Open Cal-ico on your device.
+2. Click the settings wheel on the top right
+3. Select the time format of your choosing
+4. We use a cookie, so your preference will be remembered!
+
+
+Cal-ico keeps your schedule organized, so you have more time to enjoy the company of your mini cat pet.
