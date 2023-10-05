@@ -129,6 +129,7 @@ def root():
 
         getSpriteSheet('sleep_walk_blink_spritesheet')
         getSpriteSheet('flipped_sleep_walk_blink_spritesheet')
+        getSpriteSheet('SettingsButton')
 
         html_cal = calendar.HTMLCalendar(firstweekday=0)
         now = datetime.now()
@@ -144,6 +145,21 @@ def root():
         '''
         styles = cssLink('table') + cssLink('main') + cssLink('eventMenu') + cssLink('events') + cssLink('cat')
         head = '<head>' + '\n' + styles + '\n' + meta + '\n' + '</head>' + "\n"
+
+        settingsButton = '''
+            <img src="/setup/images/SettingsButton" alt="settings" id="settings-img">
+            <div id="clock-menu" style="display: none;">
+            <div id="clock-settings">
+                <label for="clock-12-hour">12-Hour Format:</label>
+                <input type="checkbox" id="clock-12-hour" checked>
+                <label for="clock-24-hour">24-Hour Format:</label>
+                <input type="checkbox" id="clock-24-hour">
+            </div>
+            </div>
+
+
+        '''
+
 
         cat = '''
         <div>
@@ -192,7 +208,7 @@ def root():
 
                     </select>
 
-                    <select id="ampm">
+                    <select id="ampm" size="6">
                         <option value="AM">AM</option>
                         <option value="PM">PM</option>
                     </select>
@@ -309,8 +325,8 @@ def root():
             .formatmonth(year, month) \
             .replace('border="0"', 'id="calendarTable" border="1"')
         
-        body = '<body>'  + '\n' + addDayValues(cal) + '\n' + eventMenu + "\n" + cat + "\n" +'</body>'
-        javascript = jsLink('eventPopulate') + jsLink('monthSelect') + jsLink('today') + jsLink('notify') + jsLink('eventMenu') + jsLink('cat')
+        body = '<body>'  + '\n' + settingsButton + addDayValues(cal) + '\n' + eventMenu + "\n" + cat + "\n" +'</body>'
+        javascript = jsLink('settings') + jsLink('eventPopulate') + jsLink('monthSelect') + jsLink('today') + jsLink('notify') + jsLink('eventMenu') + jsLink('cat')
         html = head + body + javascript
         log('html constructed')
         return html
