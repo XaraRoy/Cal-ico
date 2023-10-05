@@ -110,8 +110,6 @@ function game(){
 
 	function handleMouseMove(event) {
 	  isHoveringCat = false;
-
-
 	  const mouseX = event.clientX - canvas.getBoundingClientRect().left;
 	  const mouseY = event.clientY - canvas.getBoundingClientRect().top;
 	  // Define the boundaries of your image
@@ -293,7 +291,7 @@ function game(){
 		//ctx.drawImage(spriteImage, sx, sy, sw, sh, dx, dy, dw, dh);
 		//console.log(isRecalled)
 		if (isRecalled == true){
-			console.log('exiting')
+			//console.log('exiting')
 			return	
 		}
 		requestAnimationFrame(animate);
@@ -324,7 +322,7 @@ animate()
 			if (x !== 0 && y !== 0 && !isHoveringCat) {
 			  // Use elementFromPoint to get the target element
 			  const targetElement = document.elementsFromPoint(x, y);
-			  console.log(targetElement);
+			  //console.log(targetElement);
 		  
 			  // Trigger a click event on the target element
 			  if (targetElement[1] && !isHoveringCat) {
