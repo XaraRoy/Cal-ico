@@ -9,6 +9,7 @@ let isRecalled  = false;
 let isHoveringCat = false;
 let lastMouseEventTime = null;
 let clickListenerAdded = false;
+let isClickProcessing = false; 
 
 
 
@@ -307,25 +308,32 @@ animate()
 		});
 
 		canvas.addEventListener('click', function(event) {
+			if (isClickProcessing) {
+			  return; // Ignore clicks while processing
+			}
+		  
+			isClickProcessing = true; // Set the flag to true
+		  
 			// Get the click coordinates
 			handleMouseMove(event);
 			lastMouseEventTime = new Date();
-
+		  
 			const x = event.clientX;
 			const y = event.clientY;
-
-
-			if (x != 0  && y != 0 && isHoveringCat == false){
-				// Use elementFromPoint to get the target element
-				const targetElement = document.elementsFromPoint(x, y);
-				console.log(targetElement);
-
-				// Trigger a click event on the target element
-				if (targetElement[1] && !isHoveringCat) {
-					targetElement[1].click();
-				};
-			};
-		});
+		  
+			if (x !== 0 && y !== 0 && !isHoveringCat) {
+			  // Use elementFromPoint to get the target element
+			  const targetElement = document.elementsFromPoint(x, y);
+			  console.log(targetElement);
+		  
+			  // Trigger a click event on the target element
+			  if (targetElement[1] && !isHoveringCat) {
+				targetElement[1].click();
+			  }
+			}
+		  
+			isClickProcessing = false; // Reset the flag after processing
+		  });
 	};
 
 }
@@ -364,5 +372,3 @@ function showViewport() {
 // Initialize the game/canvas
 window.onload = showViewport;
 window.onresize = showViewport;  
-
-
