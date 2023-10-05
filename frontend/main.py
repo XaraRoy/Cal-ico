@@ -168,7 +168,7 @@ def root():
         </div>
         '''
 
-        #TODO ADD CUSTOM RECURRENCE
+        #TODO ADD CUSTOM/Yearly RECURRENCE
         eventMenu = '''
         <div id="eventContainer" style="display: none;">
             <div id="eventMenu" class="eventMenu" style="display: none;">
@@ -176,7 +176,7 @@ def root():
                     <input type="date" id="eventDate"><br>
                 </div>
                 <div id='eventTime' class="eventContainterInputs">
-                    <select id="hour">
+                    <select id="hour" size="6">
                         <option value="01">01</option>
                         <option value="02">02</option>
                         <option value="03">03</option>
@@ -192,7 +192,7 @@ def root():
                     </select>
 
                     <label for="minute">:</label>
-                    <select id="minute">
+                    <select id="minute"size="6">
                         <option value="00">00</option>
                         <option value="05">05</option>
                         <option value="10">10</option>
@@ -208,9 +208,9 @@ def root():
 
                     </select>
 
-                    <select id="ampm" size="6">
-                        <option value="AM">AM</option>
-                        <option value="PM">PM</option>
+                    <select id="ampm" size="2">
+                        <option value="AM" style="height:50%">AM</option>
+                        <option value="PM" style="height:50%">PM</option>
                     </select>
                 </div>
 
