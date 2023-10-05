@@ -1,7 +1,7 @@
 #eventContainer{
     display: none;
-    right: 35%;
-    top: 25%;
+    right: 3%;
+    top: 10%;
     width: 275px;
     height: 650px;
     background-color: rgba(0, 0, 0, 0.699);
@@ -19,6 +19,10 @@ background-color: rgba(255, 0, 0, 0.699);
     margin: 0;
     align-self: center;
     flex-wrap: wrap;
+}
+
+button{
+    color: black;
 }
 
 .eventContainterInputs{
@@ -40,6 +44,7 @@ background-color: rgba(255, 0, 0, 0.699);
     align-items: center;
 	left: 3%;
 	top: 3%;
+    color: black;
 }
 
 #eventTime{
@@ -80,6 +85,7 @@ textarea::placeholder {
 input {
     background-color: #d4759b;
     border-color: #5f3244;
+    color: black;
 }
 
 input:not([type='checkbox']) {    
@@ -99,11 +105,13 @@ select{
     background-color: #d4759b;
     border-color: #5f3244;
 	width: 200;
+    color: black;
 }
 .eventMenu button{
     background-color: #d4759b;
     border-color: #5f3244;
 	width: 200;
+    color: black;
 }
 
 fieldset{
@@ -153,9 +161,13 @@ fieldset{
         margin-top: 2vh;
     }
     #weekly-options{
-        margin-top: 3vh;
+        margin-top: 0vh;
+        height: 20vh;
+        width: 100%;
+        font-size: x-small;
     }
     fieldset{
-        height: 90%;
+        flex-wrap: wrap;
+        justify-content: start;
     }
 }
