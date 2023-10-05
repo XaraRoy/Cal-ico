@@ -201,6 +201,10 @@ def root():
                 <div id='nameContainer' class="eventContainterInputs">
                     <input type="text" id="eventName" placeholder="Enter name"><br>
                 </div>
+                <div id='colorContainer' class="eventContainterInputs">
+                    <label for="color-picker">Event Color:</label>
+                    <input type="color" value="#5f9ea0" id="color-picker" />
+                </div>
                 <fieldset class="eventContainterInputs">
                 <legend>Optional</legend>
                 

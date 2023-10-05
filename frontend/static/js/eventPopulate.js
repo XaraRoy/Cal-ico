@@ -69,6 +69,7 @@ async function populateEvents(year, month,  day = null, del = null) {
                             eventDiv.className = 'event';
                             eventDiv.textContent = eventTimestring + ' ' + eventName;
                             eventDiv.setAttribute('data-event-key', eventKey);
+                            eventDiv.style.setProperty("background-color", event.eventColor || "#5f9ea0", "important");
                             eventContainer.appendChild(eventDiv);
 
                             //console.log('placeing' + eventKey)

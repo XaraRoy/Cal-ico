@@ -1,3 +1,12 @@
+let colorPicker;
+const defaultColor = "#5f9ea0";
+function startup() {
+    colorPicker = document.querySelector("#color-picker");
+    colorPicker.value = defaultColor;
+    colorPicker.select();
+  }
+window.addEventListener("load", startup, false);
+
 let saveButtonListenerAdded = false;     // So we dont add event 
 let deleteButtonListenerAdded = false;  // listeners to the 
 let cancelButtonListenerAdded = false  // buttons for every day.
@@ -48,6 +57,7 @@ function populateEventMenu(eventData){
     hourSelector.value = eventTime.slice(0,2);
     minuteSelector.value = eventTime.slice(3,5);
     ampmSelector.value = eventTime.slice(6,8);
+    colorPicker.value = eventData.eventColor || defaultColor;
     // if (eventData.selectedRecurrence != null){  // Removed this functionality until the route is built
     //     recurrenceEndDate.value = eventData.selectedRecurrence.endDate;
     //     var reccurenceType = eventData.selectedRecurrence.type
@@ -132,7 +142,7 @@ function addEventMenus() {
     recurrenceEndDateContainer = document.getElementById('recurrenceEndDateContainer');
     weeklyOptionsDiv = document.getElementById("weekly-options");
     monthlyOptionsDiv = document.getElementById("monthly-options");
-    
+    eventColorInput = document.getElementById("color-picker")
     // Set the Buttons
     saveEventButton = document.getElementById("saveEvent");
     deleteEventButton = document.getElementById("deleteEvent")
@@ -255,6 +265,7 @@ function addEventMenus() {
             var eventDate = eventDateInput.value;
             var eventDescription = eventDescriptionInput.value;
             var notificationFrequency = notificationFrequencyDropdown.value;
+            var eventColor = colorPicker.value;
 
             // Get selected values from the dropdowns
             const selectedHour = hourSelector.value;
@@ -301,7 +312,8 @@ function addEventMenus() {
                 'timeZone': timeZone,
                 'eventDescription': eventDescription,
                 'selectedRecurrence': selectedRecurrence,
-                'notificationFrequency': notificationFrequency
+                'notificationFrequency': notificationFrequency,
+                'eventColor' : eventColor
             };
             
 
