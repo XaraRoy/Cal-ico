@@ -6,15 +6,17 @@
 
 2. **Set Up Recurring Events**
 
-3. **No data collected or sold**
+3.  **Handmade Animated Pixel Art**
 
-4. **Completly open source**
+4. **Automatic timezone setting**
 
 5. **Custom colors for events**
 
 6. **12 and 24 hour time formats**
 
-7. **Automatic timezone setting**
+7. **Completly open source**
+
+8. **No data collected or sold**
 
 
 ## How to Use
