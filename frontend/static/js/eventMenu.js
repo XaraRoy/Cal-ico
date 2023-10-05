@@ -270,9 +270,12 @@ function addEventMenus() {
             // Get selected values from the dropdowns
             const selectedHour = hourSelector.value;
             const selectedMinute = minuteSelector.value;
-            const selectedAMPM = ampmSelector.value;
-            // Create a time string in 12-hour format
-            const timeString = `${selectedHour}:${selectedMinute} ${selectedAMPM}`;
+            let selectedAMPM = "" 
+            if (clockformat == 12){ 
+                selectedAMPM = ampmSelector.value;
+            // Create a time string format
+            }
+            const timeString = `${selectedHour}:${selectedMinute} ${selectedAMPM}`; 
 
 
             const selectedValue = recurrenceTypeDropdown.value;

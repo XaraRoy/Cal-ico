@@ -102,12 +102,44 @@ async function populateEvents(year, month,  day = null, del = null) {
                     // Extract the time from the data-event-key attribute
                     const timeA = eventA.getAttribute('data-event-key').split('--')[0];
                     const timeB = eventB.getAttribute('data-event-key').split('--')[0];
+                    
 
-                    const [hoursA, minutesA, periodA] = timeA.match(/(\d+):(\d+) (AM|PM)/).slice(1);
-                    const [hoursB, minutesB, periodB] = timeB.match(/(\d+):(\d+) (AM|PM)/).slice(1);
+                    // Handle possible 12 and 24 hour times
+                    const hasAMPMA = timeA.includes("AM") || timeA.includes("PM");
+                    const hasAMPMB = timeB.includes("AM") || timeB.includes("PM");
+                    
+                    let hoursA, minutesA, hoursB, minutesB, periodA, periodB;
+                    
+                    if (hasAMPMA) {
+                      [hoursA, minutesA, periodA] = timeA.match(/(\d+):(\d+) (AM|PM)/).slice(1);
+                    } else {
+                      [hoursA, minutesA] = timeA.match(/(\d+):(\d+)/).slice(1);
+                    }
+                    
+                    if (hasAMPMB) {
+                      [hoursB, minutesB, periodB] = timeB.match(/(\d+):(\d+) (AM|PM)/).slice(1);
+                    } else {
+                      [hoursB, minutesB] = timeB.match(/(\d+):(\d+)/).slice(1);
+                    }
+                    
+                    
+                    // Function to convert 12-hour time to 24-hour time
+                    function convertTo24Hour(hours, period) {
+                      let hours24;
+                      if (period === 'AM' && hours === '12') {
+                        hours24 = '00';
+                      } else if (period === 'PM' && hours !== '12') {
+                        hours24 = String(parseInt(hours) + 12);
+                      } else {
+                        hours24 = hours;
+                      }
+                      return hours24;
+                    }
+                    
                     // Convert hours to 24-hour format for comparison
-                    const hoursA24 = periodA === 'PM' ? parseInt(hoursA) + 12 : parseInt(hoursA);
-                    const hoursB24 = periodB === 'PM' ? parseInt(hoursB) + 12 : parseInt(hoursB);
+                    const hoursA24 = convertTo24Hour(hoursA, periodA);
+                    const hoursB24 = convertTo24Hour(hoursB, periodB);
+                    
                   
                     // Compare based on 24-hour format
                     if (hoursA24 < hoursB24) return -1; // Event A is before Event B
