@@ -150,9 +150,9 @@ def root():
             <img src="/setup/images/SettingsButton" alt="settings" id="settings-img">
             <div id="clock-menu" style="display: none;">
             <div id="clock-settings">
-                <label for="clock-12-hour">12-Hour Format:</label>
+                <label for="clock-12-hour">12-Hour:</label>
                 <input type="checkbox" id="clock-12-hour" checked>
-                <label for="clock-24-hour">24-Hour Format:</label>
+                <label for="clock-24-hour">24-Hour:</label>
                 <input type="checkbox" id="clock-24-hour">
             </div>
             </div>
@@ -346,6 +346,9 @@ def submit_form():
         eventData = request.json
 
         if eventData and all(field in eventData and eventData[field] != '' for field in ['eventName', 'eventDate', 'timeString']):
+            timeparts =  eventData['timeString'].split(":")
+            if len(timeparts[0]) != 2 or len(timeparts[1]) < 2 or len(timeparts[1]) > 5: 
+                return jsonify({'success': False, 'error': 'Invalid time'}), 500
             events = deta.Base('events')
             events.put(eventData)
             if eventData['selectedRecurrence']:
