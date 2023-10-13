@@ -1,8 +1,5 @@
 let clockformat = null
-
-
-
-  
+ 
 
 // Corrected event listener for DOMContentLoaded
 document.addEventListener('DOMContentLoaded', function(){
@@ -21,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function(){
         }
         }
         // Return a default value if the cookie is not found
-        return 12; // You can set your preferred default here as an integer
+        return 12; //set the preferred default here as an integer
     }
    
     // Set the clock format preference (e.g., when the user changes it)
@@ -97,6 +94,4 @@ document.addEventListener('DOMContentLoaded', function(){
     }
     // Initialize the hour options based on the stored format
     populateHourOptions(clockformat);
-
-
 });
