@@ -27,8 +27,6 @@ function getTimeSinceLastMouseEvent() {
   }
 }
 
-
-
 const spriteImage = new Image();
 //spriteImage.src="https://purrfect_planner-1-z2375828.deta.app/setup/images/resized_walk_blink_stand_Spritesheet"
 spriteImage.src="/setup/images/sleep_walk_blink_spritesheet"
@@ -42,17 +40,17 @@ function game(){
 
 	//console.log(isRecalled)
 	const ctx = canvas.getContext('2d')
-
+	// setting up the canvas/spritesheets
 	const ROWS = 1
 	const COLUMNS = 5
 	const SPRITE_WIDTH = 320;
 	const SPRITE_HEIGHT = 320;
 	//console.log('sprite W, H', SPRITE_WIDTH, SPRITE_HEIGHT)
+
 	const CalHeader = document.querySelector('th.month').getBoundingClientRect()
 	const HeaderBottom = CalHeader.bottom
-	let x = 0;
-
 	const TOP_BUFFER = 0
+
 	//console.log(SPRITE_WIDTH, SPRITE_HEIGHT);
 	var TARGETSPRITESIZE = Math.floor(canvas.height * 0.2);
 	var XDIRECTION = 'LEFT'
@@ -108,16 +106,21 @@ function game(){
 		};		
 	}
 
-	function handleMouseMove(event) {
+	function handleMouseEvents(event) {
+	  if (event.clientX == undefined | event.clientY == undefined){
+		return // Not sure why this fires event when there is no click? TODO?
+	  }
 	  isHoveringCat = false;
+	  lastMouseEventTime = new Date();
+	  // Check if the mouse is within the boundaries of the cat image and inside the canvas
 	  const mouseX = event.clientX - canvas.getBoundingClientRect().left;
 	  const mouseY = event.clientY - canvas.getBoundingClientRect().top;
-	  // Define the boundaries of your image
 	  const imageX = XPOS;
 	  const imageY = YPOS; 
+
+	  //console.log(mouseX, mouseY, imageX, imageY);
 	  const imageWidth = TARGETSPRITESIZE; 
 	  const imageHeight = TARGETSPRITESIZE;
-	  // Check if the mouse is within the boundaries of the image
 	  if (
 		mouseX >= imageX &&
 		mouseX <= imageX + imageWidth &&
@@ -132,22 +135,29 @@ function game(){
 			CURRENT_ANIMATION = 'wake'
 		}
 	  }
-	}
 
-
-	canvas.addEventListener('mousemove', handleMouseMove);
-
-
+	// Passing through the click event
+	if (event.clientX !== 0 && event.clientY !== 0 && !isHoveringCat) {
+		// Use elementsFromPoint to get the arrat if elements from target point
+		const targetElement = document.elementsFromPoint(event.clientX , event.clientY);
+		//console.log(targetElement);
 	
+		// Trigger a click event on the target element (under the canvas)
+		if (targetElement[1] && !isHoveringCat) {
+		targetElement[1].click();
+		}
+	}
+	};
 
-	function minBlinkFrames() {
-	  const blinkArray = [6,6,12,18];
 
+
+	function minBlinkFrames() { // Function to have a random amount of blinks (1 Cycle, 2, or 3)
+	  const blinkArray = [6,6,6,12,12,18];
 	  const minBlinkFrames = blinkArray[Math.floor(Math.random() * blinkArray.length)];
 	  //console.log(minBlinkFrames)
 	  //console.log(`next blink is ${(minBlinkFrames % 6) + 1} cycles`);
 	  return minBlinkFrames;
-	}
+	};
 
 	var blinkframes = minBlinkFrames();
 	const minStandFrames = ANIMATIONKEY['stand'].column - 1;
@@ -158,8 +168,7 @@ function game(){
 
 
 	function animate(){
-		//console.log('Time since last mouse event (ms):', getTimeSinceLastMouseEvent());
-		if (getTimeSinceLastMouseEvent() >= 100000 && !toSleep && CURRENT_ANIMATION != 'sleep' && CURRENT_ANIMATION != 'stand' && CURRENT_ANIMATION != 'wake'){
+		if (getTimeSinceLastMouseEvent() >= 60000 && !toSleep && CURRENT_ANIMATION != 'sleep' && CURRENT_ANIMATION != 'stand' && CURRENT_ANIMATION != 'wake'){
 			//console.log('feeling sleepy', getTimeSinceLastMouseEvent(), CURRENT_ANIMATION)
 			toSleep = true;
 			CURRENT_ANIMATION = 'stand'
@@ -178,7 +187,7 @@ function game(){
 			CURRENT_ANIMATION = 'stand';
 			FRAME = 1;
 			blinkframes = minBlinkFrames();
-		} else if (CURRENT_ANIMATION == 'stand' && standframes == 0 && !toSleep){
+		} else if (CURRENT_ANIMATION == 'stand' && standframes <= 0 && !toSleep){
 			CURRENT_ANIMATION = 'pace';
 			standframes = minStandFrames;
 			FRAME = 1;
@@ -219,6 +228,8 @@ function game(){
 					}
 					standframes = standframes - 1;
 					if (FRAME == 0 && toSleep) {
+						// contniue the toSleep Cycle (Stand->Wake->Sleep)
+
 						//console.log('inverse waking');
 						CURRENT_ANIMATION = 'wake';
 						FRAME = ANIMATIONKEY['wake'].column + 1;
@@ -265,6 +276,7 @@ function game(){
 					}
 
 					if (toSleep) {
+						// Complete the toSleep Cycle (Stand->Wake->Sleep)
 						toSleep = false;
 					}
 				}
@@ -277,6 +289,7 @@ function game(){
 						drawCharacter(flippedspriteImage);
 					}
 					if (FRAME == 1 && toSleep) {
+						// continue the toSleep Cycle (Stand->Wake->Sleep)
 						CURRENT_ANIMATION = 'sleep';
 						toSleep = false;
 					}
@@ -297,41 +310,12 @@ function game(){
 		requestAnimationFrame(animate);
 		}
 
-animate()
+	animate();
 
+	// Calling this after animate so we have the xpos/ypos
 	if (!clickListenerAdded){
-		document.addEventListener('mousemove', function(event) {
-			handleMouseMove(event);
-			//console.log('mouseMoved');
-		});
-
-		canvas.addEventListener('click', function(event) {
-			if (isClickProcessing) {
-			  return; // Ignore clicks while processing
-			}
-		  
-			isClickProcessing = true; // Set the flag to true
-		  
-			// Get the click coordinates
-			handleMouseMove(event);
-			lastMouseEventTime = new Date();
-		  
-			const x = event.clientX;
-			const y = event.clientY;
-		  
-			if (x !== 0 && y !== 0 && !isHoveringCat) {
-			  // Use elementFromPoint to get the target element
-			  const targetElement = document.elementsFromPoint(x, y);
-			  //console.log(targetElement);
-		  
-			  // Trigger a click event on the target element
-			  if (targetElement[1] && !isHoveringCat) {
-				targetElement[1].click();
-			  }
-			}
-		  
-			isClickProcessing = false; // Reset the flag after processing
-		  });
+		canvas.addEventListener('click', handleMouseEvents);
+		clickListenerAdded = true;
 	};
 
 }
@@ -361,10 +345,7 @@ function showViewport() {
 	 isRecalled = false;
     game();
   }
-}, 300);
-
-
-
+	}, 300);
 }
 
 // Initialize the game/canvas
