@@ -27,6 +27,17 @@ async function populateEvents(year, month,  day = null, del = null) {
         }
         // Await the promise returned by getEvents
         getEvents().then(eventData => {
+            var monthElement = document.querySelector(".month th");
+            var selectedMonth = monthElement.getAttribute('month')
+            if (parseInt(selectedMonth) < 10) {  
+                selectedMonth  = 0 + selectedMonth; // No zfill in js =(
+            };
+            if (eventData.length > 0){
+                if (eventData[0].eventMonth != selectedMonth){
+                    return;
+                }
+            }
+            
             if (del){
                 containersToClearOnDelete = document.querySelectorAll('.dayEventContainer');
                 containersToClearOnDelete.forEach(function (container){

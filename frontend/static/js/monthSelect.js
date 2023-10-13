@@ -19,6 +19,8 @@ function updateTable(year, month) {
             addEmptyCellListeners();
             //addEventMenus
             addEventMenus()
+            //add the events
+            populateEvents(year, month);
         }
     };
     xhr.open("GET", `/cal/${year}/${month}`, true);
@@ -34,6 +36,7 @@ function displayMonth() {
         ${getMonthName(selectedMonth)} ${selectedYear}
         <button onclick="nextMonth()">Next</button>
     `;
+    monthElement.setAttribute("month", selectedMonth)
 }
 
 // Function to get the name of the month
@@ -80,8 +83,6 @@ function prevMonth() {
     }
     displayMonth();
     updateTable(selectedYear, selectedMonth);
-    // addEventMenus()
-    populateEvents(selectedYear, selectedMonth);
 }
 
 // Function to move to the next month
@@ -93,9 +94,6 @@ function nextMonth() {
     }
     displayMonth();
     updateTable(selectedYear, selectedMonth);
-    // addEventMenus()
-    populateEvents(selectedYear, selectedMonth);
-
 
 }
 
@@ -104,15 +102,7 @@ function nextMonth() {
 // Wait for the DOM to be fully loaded before executing the initial display
 document.addEventListener("DOMContentLoaded", function () {
     try {
-        // Initial display of the current month
-        displayMonth();
-
-        addEventMenus()
-
-        // set the empty cells to change months
-        addEmptyCellListeners();
-        populateEvents(selectedYear, selectedMonth);
-
+        updateTable(selectedYear, selectedMonth);
     } catch (error) {
         console.error('error loading initial calendar:')
         console.error(error)
