@@ -1,5 +1,5 @@
 let urlString = null;
-
+// Thanks to Atul @ https://medium.com/@a7ul/beginners-guide-to-web-push-notifications-using-service-workers-cb3474a17679
 self.addEventListener('install', function(event) {
     // Pre-cache the URL when the service worker is installed
     event.waitUntil(
@@ -68,7 +68,7 @@ self.addEventListener('activate', function(event) {
             applicationServerKey: publicKey
         });
         
-        // Send the subscription data to your server
+        // Send the subscription data to the server
         const response = await fetch('/setup/subscription', {
           method: 'PUT',
           headers: {
