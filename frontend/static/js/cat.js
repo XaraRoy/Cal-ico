@@ -29,11 +29,11 @@ function getTimeSinceLastMouseEvent() {
 
 const spriteImage = new Image();
 //spriteImage.src="https://purrfect_planner-1-z2375828.deta.app/setup/images/resized_walk_blink_stand_Spritesheet"
-spriteImage.src="/setup/images/sleep_walk_blink_spritesheet"
+spriteImage.src=location.href + "setup/images/sleep_walk_blink_spritesheet/"
 //spriteImage.src="sleep_walk_blink_spritesheet.png"
 
 const flippedspriteImage = new Image()
-flippedspriteImage.src="/setup/images/flipped_sleep_walk_blink_spritesheet"
+flippedspriteImage.src=location.href + "setup/images/flipped_sleep_walk_blink_spritesheet/"
  //flippedspriteImage.src="flipped_sleep_walk_blink_spritesheet.png"
 function game(){
 

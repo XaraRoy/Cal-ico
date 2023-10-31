@@ -12,6 +12,7 @@ print(f'config.py says {TEST_STRING}', flush=True)
 
 deta = Deta()
 app = Flask(__name__)
+origin = f"https://{os.getenv('DETA_SPACE_APP_HOSTNAME')}"
 
 
 def log(message):
@@ -146,8 +147,8 @@ def root():
         styles = cssLink('table') + cssLink('main') + cssLink('eventMenu') + cssLink('events') + cssLink('cat')
         head = '<head>' + '\n' + styles + '\n' + meta + '\n' + '</head>' + "\n"
 
-        settingsButton = '''
-            <img src="/setup/images/SettingsButton" alt="settings" id="settings-img">
+        settingsButton = f'''
+            <img src="{origin.replace('"','')}/setup/images/SettingsButton/" alt="settings" id="settings-img">
             <div id="clock-menu" style="display: none;">
             <div id="clock-settings">
                 <label for="clock-12-hour">12-Hour:</label>
@@ -451,7 +452,6 @@ def setup_api_key():
 def setup_origin():
     log('serving the origin')
     try:
-        origin = f"https://{os.getenv('DETA_SPACE_APP_HOSTNAME')}"
         return jsonify(origin), 200
     except:
         return jsonify({'error': str(traceback.format_exc())}), 500
