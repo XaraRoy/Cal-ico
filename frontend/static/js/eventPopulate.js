@@ -98,7 +98,7 @@ async function populateEvents(year, month,  day = null, del = null) {
                         }
 
 
-                        // If you found the match, you can exit the loop
+                        // If match found, exit the loop
                         return;
                     }
                 });
